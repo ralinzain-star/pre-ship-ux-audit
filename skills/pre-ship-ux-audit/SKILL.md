@@ -32,17 +32,6 @@ This is not a design critique. It is the last honest read before real users see 
 thing. The output has one job: give the PM a list they can act on this sprint, where
 every item says what it costs if ignored.
 
-## Two ways to run it
-
-| Mode | What it is | When |
-|---|---|---|
-| **Inline audit** | You run the checklist yourself, in this context. Findings and a verdict, no score. | A small feature, a quick read, or you were asked a direct question. |
-| **Scored audit** | Specialist agents inspect in parallel, a script scores them, one merged report with a scorecard. | A real pre-ship gate, anything you will compare against a later round, or when a live URL exists. |
-
-The scored mode is the one that answers "did Round 2 actually improve". It needs the
-`UX Audit Orchestrator` agent, described below. Everything from here to the workflow
-applies to both.
-
 ## Terminology
 
 **Critical user flow**, shortened to **flow** throughout these files, is the artefact the
@@ -195,11 +184,17 @@ For medium and large features, finish with a one-page report.
 See `references/report-template.md` when you reach this step: it has the full structure,
 the scorecard format, and an example executive summary.
 
-## Scored audit: the agent fan-out
+## Scored audit
 
-Dispatch the `UX Audit Orchestrator` agent. It gathers context, runs goal derivation first,
-then sends the inspectors in one message so they run concurrently, scores the result, and
-merges everything into one report.
+| Mode | What it is | When |
+|---|---|---|
+| **Inline** | You run the checklist yourself, here. Findings and a verdict, no score. | A small feature, a quick read, or a direct question. |
+| **Scored** | Specialists inspect in parallel, a script scores them, one merged report. | A real ship gate, anything you will compare against a later round, or when a live URL exists. |
+
+Scored mode is the one that answers "did Round 2 actually improve". Dispatch the
+`UX Audit Orchestrator` agent: it takes stock of what exists, runs the two sequential steps,
+sends the inspectors in one message so they run concurrently, scores the result, and merges
+everything into one report.
 
 | Agent | Dimension | Notes |
 |---|---|---|
@@ -212,6 +207,28 @@ merges everything into one report.
 | `UX Audit · Usability Heuristics` | Usability Heuristics | Nielsen and Krug, restricted to what the four layers do not cover |
 | `UX Audit · Usability Test` | Usability Test | **Live**: opens the browser and attempts real user goals. Needs a URL and a journey draft |
 | `UX Audit · Accessibility` | Accessibility | The WCAG 2.2 AA subset that should block a release |
+
+```
+critical user flow  →  complete it  →  mark observed / inferred / invented
+          ↓
+    derive JTBD  →  validity tests  →  map back: gaps + ceremony
+          ↓
+ live test attempts each JTBD in the browser
+          ↓
+task results join the inspectors' findings
+          ↓
+    script scores, orchestrator merges
+          ↓
+next round re-tests the SAME frozen JTBD set
+```
+
+The first two steps run alone and in order; everything after fans out. JTBD are never
+derived from invented steps: an invented step is a guess at a solution, so a JTBD climbed
+out of it is a guess about a guess that looks authoritative by the time it reaches a test.
+
+The JTBD set is frozen after Round 1 on purpose. It is the fixed measuring stick that makes
+Round 2's task success rate mean something. Rewrite it because the design changed and you
+are measuring the new design against itself, which is what scored mode exists to avoid.
 
 Two supporting pieces:
 
@@ -255,32 +272,6 @@ before running a scored audit, and say in the report which kind of round it was.
 
 **Report coverage next to the score, always.** 90 at 40% coverage does not mean 90% good, it
 means most of the feature could not be examined. On a pre-ship audit that is the headline.
-
-## The loop
-
-```
-critical user flow  →  complete it  →  mark observed / inferred / invented
-                     ↓
-              derive jobs  →  validity tests  →  map back: gaps + ceremony
-                     ↓
-        live test attempts each goal in the browser
-                     ↓
-     task results join the inspectors' findings
-                     ↓
-          script scores, orchestrator merges
-                     ↓
-   next round re-tests the SAME frozen JTBD set
-```
-
-The first two steps run alone and in order. Everything after fans out in parallel. Goals
-are never derived from invented steps: an invented step is a guess at a solution, so a goal
-climbed out of it is a guess about a guess that looks authoritative by the time it reaches
-a test.
-
-The JTBD set is frozen after Round 1 on purpose. It is the fixed measuring stick that makes
-Round 2's task success rate mean something. Rewrite it because the design changed and you
-are measuring the new design against itself, which is what the whole scored mode exists to
-avoid.
 
 ## What is not a finding
 

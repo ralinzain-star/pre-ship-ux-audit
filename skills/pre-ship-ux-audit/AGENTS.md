@@ -14,7 +14,7 @@ September 2026
 
 ## Abstract
 
-A pre-ship UX audit framework. Every finding is evaluated against four layers (Flow Integrity, Control & Transparency, Trust & Copy, Edge Cases) and assigned a severity tied to user and business cost, so a PM can prioritise the result without re-litigating it.
+A pre-ship UX audit framework. A feature is taken stock of, its critical user flow completed and its JTBD derived, then audited across seven dimensions: the four checklist layers (Flow Integrity, Control & Transparency, Trust & Copy, Edge Cases) plus usability heuristics, accessibility, and a live task-based usability test. Every finding carries a severity tied to user and business cost, and a script turns the results into a score, a coverage figure and a ship verdict, the same way every round, so Round 2 can be compared to Round 1.
 
 ---
 
@@ -554,3 +554,4 @@ _Rule file: `rules/edge-first-vs-returning.md`_
 
 - https://app.notion.com/p/Pre-ship-UX-checklist-361997983434804fb5d9c45c44e4c2f7
 - https://app.notion.com/p/36d997983434802fb763dbd3179242aa
+- https://github.com/ralinzain-star/pre-ship-ux-audit
