@@ -12,7 +12,7 @@ Jobscan product team.
 ```
 skills/pre-ship-ux-audit/  SKILL.md, 17 rules, references, assets, scripts
 agents/                    ten agent definitions, one orchestrator plus nine specialists
-docs/                      the architecture diagram, Chinese and English
+docs/                      the architecture diagram: HTML and PDF, Chinese and English
 .claude-plugin/            plugin and marketplace manifests
 install.sh                 links this repo into ~/.claude so Claude Code can load it
 ```
@@ -36,6 +36,19 @@ Moving the bundle somewhere else is one command plus a re-link:
 mv ~/Documents/GitHub/pre-ship-ux-audit /somewhere/else
 /somewhere/else/install.sh
 ```
+
+## Regenerating the PDFs
+
+```bash
+pip3 install svglib
+python3 docs/build-pdf.py docs/architecture-zh.html docs/architecture-zh.pdf
+python3 docs/build-pdf.py docs/architecture-en.html docs/architecture-en.pdf
+```
+
+The HTML is the source. The script flattens the CSS variables and web fonts that svglib
+cannot resolve, and maps bold text to a bold CJK font explicitly, because svglib does not
+resolve font weight through a font family and would silently fall back to a face with no
+Chinese glyphs.
 
 ## Using it
 
