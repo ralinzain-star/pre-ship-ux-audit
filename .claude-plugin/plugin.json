@@ -1,0 +1,8 @@
+{
+  "name": "pre-ship-ux-audit",
+  "version": "1.0.0",
+  "description": "Pre-ship UX audit: complete the critical user flow, derive the JTBD, run seven auditors in parallel, and score the result into a ship or no-ship verdict.",
+  "author": {
+    "name": "Harmony"
+  }
+}

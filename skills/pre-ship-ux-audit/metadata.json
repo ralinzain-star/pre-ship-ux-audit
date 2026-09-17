@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "organization": "Jobscan Product Design",
+  "author": "Iris Hsieh",
+  "date": "September 2026",
+  "abstract": "A pre-ship UX audit framework. Every finding is evaluated against four layers (Flow Integrity, Control & Transparency, Trust & Copy, Edge Cases) and assigned a severity tied to user and business cost, so a PM can prioritise the result without re-litigating it.",
+  "references": [
+    "https://app.notion.com/p/Pre-ship-UX-checklist-361997983434804fb5d9c45c44e4c2f7",
+    "https://app.notion.com/p/36d997983434802fb763dbd3179242aa"
+  ]
+}

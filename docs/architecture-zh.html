@@ -1,0 +1,243 @@
+<title>上線前 UX 稽核</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+TC:wght@600&display=swap">
+<style>
+  :root {
+    --paper:#F5F7F8; --surface:#FFFFFF; --sunk:#EDF1F2;
+    --ink:#12171C; --ink-2:#3E4A55; --ink-3:#6D7A86;
+    --line:#DCE2E6; --line-2:#C3CDD3;
+    --accent:#14666B; --accent-w:#E0EEEE;
+    --crit:#A8301C; --major:#9A5406; --nice:#0A6A42;
+    --shadow:0 1px 3px rgba(18,23,28,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#0E1215; --surface:#161C21; --sunk:#11171B;
+      --ink:#EAEFF2; --ink-2:#B2BEC7; --ink-3:#7C8892;
+      --line:#232B32; --line-2:#313B43;
+      --accent:#62C3C6; --accent-w:#102B2C;
+      --crit:#F08470; --major:#E0A032; --nice:#4EC08A;
+      --shadow:none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#0E1215; --surface:#161C21; --sunk:#11171B;
+    --ink:#EAEFF2; --ink-2:#B2BEC7; --ink-3:#7C8892;
+    --line:#232B32; --line-2:#313B43;
+    --accent:#62C3C6; --accent-w:#102B2C;
+    --crit:#F08470; --major:#E0A032; --nice:#4EC08A;
+    --shadow:none;
+  }
+
+  body {
+    background: var(--paper); color: var(--ink-2);
+    font-family:"PingFang TC","Noto Sans TC","Hiragino Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    font-size:15px; line-height:1.8; letter-spacing:.01em; -webkit-font-smoothing:antialiased;
+  }
+  .wrap {
+    max-width:940px; margin-inline:auto;
+    padding-inline:20px; padding-block:52px 72px;
+    display:flex; flex-direction:column; gap:22px;
+  }
+  h1 {
+    color:var(--ink); margin:0;
+    font-family:"Noto Serif TC","Songti TC",serif; font-weight:600;
+    font-size:clamp(25px,4.4vw,32px); line-height:1.3; letter-spacing:.02em;
+  }
+  .eyebrow {
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:500;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3);
+  }
+  .figbox {
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:18px 14px; overflow-x:auto; box-shadow:var(--shadow);
+  }
+  .figbox svg { display:block; width:100%; min-width:860px; height:auto; color:var(--ink-2); }
+  .figbox svg text { font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif; }
+  .figbox svg text.m { font-family:"IBM Plex Mono",monospace; }
+</style>
+
+<div class="wrap">
+
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <div class="eyebrow">Skill · pre-ship-ux-audit</div>
+    <h1>上線前 UX 稽核</h1>
+  </div>
+
+  <div class="figbox">
+    <svg viewBox="0 0 900 1124" role="img" aria-label="架構圖：手上的 spec、Figma、critical user flow、JTBD 與測試網址先進入盤點。盤點檢查 critical user flow 完整嗎、JTBD 有嗎、有沒有可量測的 outcome，並依結果決定：不完整就補完 critical user flow 與推導 JTBD 並標注哪些是 AI 補的，已經有了就只驗證跟補缺口，第二輪則沿用凍結的 JTBD。接著沿左側分派線同時展開給七個稽核員，每條 rule 都列出在查什麼。七個收斂後交給 score_audit.py 計分並產出報告，報告沿虛線回到分派線起點。">
+      <defs>
+        <marker id="k1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"></path></marker>
+        <marker id="k2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"></path></marker>
+      </defs>
+
+      <!-- ══ 前置：全部收進「盤點」 ══ -->
+      <rect x="14" y="48" width="140" height="72" rx="6" fill="var(--sunk)" stroke="var(--line-2)"></rect>
+      <text x="84" y="72" text-anchor="middle" font-size="10" fill="currentColor">spec · Figma</text>
+      <text x="84" y="88" text-anchor="middle" font-size="10" fill="currentColor">critical user flow</text>
+      <text x="84" y="104" text-anchor="middle" font-size="10" fill="currentColor">JTBD · 測試網址</text>
+      <line x1="156" y1="84" x2="174" y2="84" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+
+      <rect x="178" y="30" width="520" height="104" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
+      <text x="196" y="52" font-size="12.5" font-weight="600" fill="var(--accent)">盤點</text>
+      <text x="242" y="52" font-size="9.5" fill="var(--ink-3, currentColor)">critical user flow 完整嗎 · JTBD 有嗎 · 有可量測的 outcome 嗎</text>
+      <line x1="196" y1="62" x2="680" y2="62" stroke="var(--line)" stroke-width="1"></line>
+      <text x="196" y="80" font-size="10" fill="currentColor">不完整</text>
+      <text x="262" y="80" font-size="10" fill="currentColor">補完 critical user flow、推導 JTBD，AI 補上的部分會標注出來</text>
+      <text x="196" y="100" font-size="10" fill="currentColor">已經有了</text>
+      <text x="262" y="100" font-size="10" fill="currentColor">只驗證跟補缺口，不重做</text>
+      <text x="196" y="120" font-size="10" fill="var(--accent)">第二輪</text>
+      <text x="262" y="120" font-size="10" fill="var(--accent)">沿用凍結的 JTBD，不重推</text>
+
+      <!-- 接入分派線 -->
+      <path d="M438,134 L438,158 L60,158 L60,176" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+      <circle cx="60" cy="176" r="4" fill="var(--accent)"></circle>
+      <text x="100" y="170" font-size="10" class="m" letter-spacing="1.2" fill="var(--ink-3, currentColor)">同時進行</text>
+      <text x="178" y="170" font-size="9.5" fill="var(--ink-3, currentColor)">每條 rule 一個檔案，寫明失敗與通過長什麼樣並帶權重：agent 靠它判斷，程式靠它算分</text>
+
+      <line x1="60" y1="176" x2="60" y2="924" stroke="currentColor" stroke-width="1.4"></line>
+
+      <!-- 七個稽核員 -->
+      <line x1="60" y1="225" x2="96" y2="225" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="182" width="540" height="86" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="114" y="201" font-size="11.5" fill="currentColor">Flow Integrity　流程完整</text>
+      <text x="626" y="201" text-anchor="end" font-size="9.5" class="m" fill="var(--ink-3, currentColor)">4 rules</text>
+      <text x="114" y="216" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">flow-visible-entry-point</text>
+      <text x="270" y="216" font-size="8.5" fill="var(--ink-3, currentColor)">入口看得到，新使用者知道從哪開始</text>
+      <text x="114" y="229" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">flow-prerequisites-met</text>
+      <text x="270" y="229" font-size="8.5" fill="var(--ink-3, currentColor)">每一步要的資料，前面先問過了</text>
+      <text x="114" y="242" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">flow-all-states-designed</text>
+      <text x="270" y="242" font-size="8.5" fill="var(--ink-3, currentColor)">成功、失敗、載入中、沒資料，四張都有畫</text>
+      <text x="114" y="255" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">flow-system-status-visible</text>
+      <text x="270" y="255" font-size="8.5" fill="var(--ink-3, currentColor)">按了有反應，等久了會說在做什麼</text>
+      <line x1="640" y1="225" x2="664" y2="225" stroke="currentColor" stroke-width="1.2"></line>
+
+      <line x1="60" y1="321" x2="96" y2="321" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="278" width="540" height="86" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="114" y="297" font-size="11.5" fill="currentColor">Control &amp; Transparency　控制權</text>
+      <text x="626" y="297" text-anchor="end" font-size="9.5" class="m" fill="var(--ink-3, currentColor)">4 rules</text>
+      <text x="114" y="312" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">control-pause-stop-undo</text>
+      <text x="270" y="312" font-size="8.5" fill="var(--ink-3, currentColor)">每頁都有出口，做到一半可以停</text>
+      <text x="114" y="325" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">control-confirm-irreversible</text>
+      <text x="270" y="325" font-size="8.5" fill="var(--ink-3, currentColor)">刪不回來的動作要先問一次，或能復原</text>
+      <text x="114" y="338" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">control-explain-behaviour</text>
+      <text x="270" y="338" font-size="8.5" fill="var(--ink-3, currentColor)">系統自己改的東西有說為什麼，鎖住的按鈕說怎樣才能用</text>
+      <text x="114" y="351" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">control-action-history</text>
+      <text x="270" y="351" font-size="8.5" fill="var(--ink-3, currentColor)">做過什麼查得到，不是跳個提示就沒了</text>
+      <line x1="640" y1="321" x2="664" y2="321" stroke="currentColor" stroke-width="1.2"></line>
+
+      <line x1="60" y1="417" x2="96" y2="417" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="374" width="540" height="86" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="114" y="393" font-size="11.5" fill="currentColor">Trust &amp; Copy　信任與文案</text>
+      <text x="626" y="393" text-anchor="end" font-size="9.5" class="m" fill="var(--ink-3, currentColor)">4 rules</text>
+      <text x="114" y="408" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">trust-actionable-errors</text>
+      <text x="270" y="408" font-size="8.5" fill="var(--ink-3, currentColor)">錯誤要說哪裡錯、現在怎麼辦</text>
+      <text x="114" y="421" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">trust-plain-language</text>
+      <text x="270" y="421" font-size="8.5" fill="var(--ink-3, currentColor)">用使用者的話，不要內部術語</text>
+      <text x="114" y="434" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">trust-explain-recommendations</text>
+      <text x="270" y="434" font-size="8.5" fill="var(--ink-3, currentColor)">給推薦或分數要附理由</text>
+      <text x="114" y="447" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">trust-specific-ctas</text>
+      <text x="270" y="447" font-size="8.5" fill="var(--ink-3, currentColor)">按鈕寫做完會怎樣，不要寫「送出」</text>
+      <line x1="640" y1="417" x2="664" y2="417" stroke="currentColor" stroke-width="1.2"></line>
+
+      <line x1="60" y1="520" x2="96" y2="520" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="470" width="540" height="99" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="114" y="489" font-size="11.5" fill="currentColor">Edge Cases　極端情況</text>
+      <text x="626" y="489" text-anchor="end" font-size="9.5" class="m" fill="var(--ink-3, currentColor)">5 rules</text>
+      <text x="114" y="504" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">edge-missing-data</text>
+      <text x="270" y="504" font-size="8.5" fill="var(--ink-3, currentColor)">資料不夠就直說，不要留白或硬算</text>
+      <text x="114" y="517" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">edge-network-failure</text>
+      <text x="270" y="517" font-size="8.5" fill="var(--ink-3, currentColor)">斷線、逾時、伺服器壞掉，各有畫面</text>
+      <text x="114" y="530" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">edge-duplicate-actions</text>
+      <text x="270" y="530" font-size="8.5" fill="var(--ink-3, currentColor)">連點兩下不會送出兩筆</text>
+      <text x="114" y="543" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">edge-interruption-recovery</text>
+      <text x="270" y="543" font-size="8.5" fill="var(--ink-3, currentColor)">關掉再回來，填過的還在</text>
+      <text x="114" y="556" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">edge-first-vs-returning</text>
+      <text x="270" y="556" font-size="8.5" fill="var(--ink-3, currentColor)">第一次來跟常來，看到的不一樣</text>
+      <line x1="640" y1="520" x2="664" y2="520" stroke="currentColor" stroke-width="1.2"></line>
+
+      <line x1="60" y1="654" x2="96" y2="654" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="579" width="540" height="151" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="114" y="598" font-size="11.5" fill="currentColor">Usability Heuristics　易用性</text>
+      <text x="626" y="598" text-anchor="end" font-size="9.5" class="m" fill="var(--ink-3, currentColor)">9 checks</text>
+      <text x="114" y="613" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-no-dark-patterns</text>
+      <text x="270" y="613" font-size="8.5" fill="var(--ink-3, currentColor)">退訂跟訂閱一樣容易，沒有話術</text>
+      <text x="114" y="626" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-consistency-standards</text>
+      <text x="270" y="626" font-size="8.5" fill="var(--ink-3, currentColor)">元件行為跟命名一致</text>
+      <text x="114" y="639" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-error-prevention</text>
+      <text x="270" y="639" font-size="8.5" fill="var(--ink-3, currentColor)">用選單跟預設值擋錯，不是事後才罵</text>
+      <text x="114" y="652" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-recognition-over-recall</text>
+      <text x="270" y="652" font-size="8.5" fill="var(--ink-3, currentColor)">不用記上一頁，該顯示的直接顯示</text>
+      <text x="114" y="665" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-minimalist-hierarchy</text>
+      <text x="270" y="665" font-size="8.5" fill="var(--ink-3, currentColor)">一頁一個主要動作</text>
+      <text x="114" y="678" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-orientation-trunk-test</text>
+      <text x="270" y="678" font-size="8.5" fill="var(--ink-3, currentColor)">隨便掉到哪頁都知道自己在哪</text>
+      <text x="114" y="691" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-scannable-not-thinkable</text>
+      <text x="270" y="691" font-size="8.5" fill="var(--ink-3, currentColor)">掃過去就懂，不用停下來想</text>
+      <text x="114" y="704" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-flexibility-efficiency</text>
+      <text x="270" y="704" font-size="8.5" fill="var(--ink-3, currentColor)">熟手有快捷鍵跟批次操作</text>
+      <text x="114" y="717" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">ux-contextual-help</text>
+      <text x="270" y="717" font-size="8.5" fill="var(--ink-3, currentColor)">說明就在旁邊，不用跑去另一個網站</text>
+      <line x1="640" y1="654" x2="664" y2="654" stroke="currentColor" stroke-width="1.2"></line>
+
+      <line x1="60" y1="816" x2="96" y2="816" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="740" width="540" height="151" rx="5" fill="var(--surface)" stroke="var(--line)" stroke-width="1"></rect>
+      <text x="114" y="759" font-size="11.5" fill="currentColor">Accessibility　無障礙</text>
+      <text x="626" y="759" text-anchor="end" font-size="9.5" class="m" fill="var(--ink-3, currentColor)">9 checks</text>
+      <text x="114" y="774" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-keyboard-operable</text>
+      <text x="270" y="774" font-size="8.5" fill="var(--ink-3, currentColor)">只用鍵盤走得完</text>
+      <text x="114" y="787" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-names-and-labels</text>
+      <text x="270" y="787" font-size="8.5" fill="var(--ink-3, currentColor)">每個按鈕都有名字，圖示的也要</text>
+      <text x="114" y="800" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-form-errors</text>
+      <text x="270" y="800" font-size="8.5" fill="var(--ink-3, currentColor)">錯誤指到對的欄位，填過的不會消失</text>
+      <text x="114" y="813" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-focus-visible</text>
+      <text x="270" y="813" font-size="8.5" fill="var(--ink-3, currentColor)">游標停在哪看得出來</text>
+      <text x="114" y="826" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-contrast-aa</text>
+      <text x="270" y="826" font-size="8.5" fill="var(--ink-3, currentColor)">對比度要用量的：文字 4.5:1，元件 3:1</text>
+      <text x="114" y="839" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-status-announced</text>
+      <text x="270" y="839" font-size="8.5" fill="var(--ink-3, currentColor)">畫面變了要念出來，不能只是變</text>
+      <text x="114" y="852" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-not-colour-alone</text>
+      <text x="270" y="852" font-size="8.5" fill="var(--ink-3, currentColor)">不能只靠顏色分辨</text>
+      <text x="114" y="865" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-target-size</text>
+      <text x="270" y="865" font-size="8.5" fill="var(--ink-3, currentColor)">點擊區至少 24px</text>
+      <text x="114" y="878" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">a11y-motion-and-timing</text>
+      <text x="270" y="878" font-size="8.5" fill="var(--ink-3, currentColor)">動畫可以關，時間可以延長</text>
+      <line x1="640" y1="816" x2="664" y2="816" stroke="currentColor" stroke-width="1.2"></line>
+
+      <line x1="60" y1="924" x2="96" y2="924" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></line>
+      <rect x="100" y="901" width="540" height="47" rx="5" fill="var(--accent-w)" stroke="var(--accent)" stroke-width="1.4"></rect>
+      <text x="114" y="920" font-size="11.5" font-weight="600" fill="var(--accent)">Usability Test　實測</text>
+      <text x="626" y="920" text-anchor="end" font-size="9.5" class="m" fill="var(--accent)">每個 JTBD 一個</text>
+      <text x="114" y="935" font-size="8.5" class="m" fill="var(--ink-2, currentColor)">task-&lt;jtbd-slug&gt;</text>
+      <text x="270" y="935" font-size="8.5" fill="var(--ink-3, currentColor)">照使用者的目標走一遍，看走不走得完</text>
+      <line x1="640" y1="924" x2="664" y2="924" stroke="currentColor" stroke-width="1.2"></line>
+
+      <!-- 收斂後往下走 -->
+      <path d="M664,225 L664,964 L210,964 L210,976" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"></path>
+
+      <!-- 計分與輸出 -->
+      <rect x="120" y="980" width="200" height="76" rx="6" fill="var(--surface)" stroke="var(--line-2)"></rect>
+      <text x="136" y="1003" font-size="11.5" class="m" fill="var(--ink, currentColor)">score_audit.py</text>
+      <text x="136" y="1023" font-size="9.5" fill="currentColor">判定看 Critical 的數量，</text>
+      <text x="136" y="1039" font-size="9.5" fill="currentColor">分數看加權通過率</text>
+      <line x1="322" y1="1018" x2="346" y2="1018" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+
+      <rect x="350" y="980" width="250" height="76" rx="6" fill="var(--sunk)" stroke="var(--line-2)"></rect>
+      <text x="366" y="998" font-size="9" class="m" letter-spacing="1" fill="var(--ink-3, currentColor)">輸出範例</text>
+      <rect x="366" y="1007" width="4" height="14" rx="1" fill="var(--crit)"></rect>
+      <text x="378" y="1019" font-size="12.5" font-weight="600" fill="var(--crit)">不可上線</text>
+      <text x="452" y="1019" font-size="10" fill="currentColor">分數 24/100</text>
+      <text x="528" y="1019" font-size="10" fill="currentColor">覆蓋率 80%</text>
+      <circle cx="370" cy="1038" r="4" fill="var(--crit)"></circle><text x="380" y="1042" font-size="10" fill="currentColor">2</text>
+      <circle cx="402" cy="1038" r="4" fill="var(--major)"></circle><text x="412" y="1042" font-size="10" fill="currentColor">2</text>
+      <circle cx="434" cy="1038" r="4" fill="var(--nice)"></circle><text x="444" y="1042" font-size="10" fill="currentColor">0</text>
+      <text x="460" y="1042" font-size="8.5" fill="var(--ink-3, currentColor)">Critical / Major / Nice to have</text>
+
+      <!-- 重複迴圈 -->
+      <path d="M475,1056 L475,1094 L60,1094 L60,932" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#k2)"></path>
+      <text x="640" y="1086" text-anchor="end" font-size="10.5" fill="var(--accent)">重複迴圈 · 修完重跑，沿用同一組凍結的 JTBD · 不會完成，只產出可比較的每一輪</text>
+    </svg>
+  </div>
+
+</div>

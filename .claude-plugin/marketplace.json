@@ -1,0 +1,33 @@
+{
+  "name": "pre-ship-ux-audit-marketplace",
+  "owner": {
+    "name": "Harmony"
+  },
+  "metadata": {
+    "description": "Pre-ship UX audit toolkit",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "pre-ship-ux-audit",
+      "description": "A skill and ten agents that audit a feature before it ships: complete the critical user flow, derive the JTBD, run seven auditors in parallel, score with a script so rounds are comparable, and return one report with a verdict.",
+      "source": "./",
+      "strict": true,
+      "skills": [
+        "./skills/pre-ship-ux-audit"
+      ],
+      "agents": [
+        "./agents/ux-audit-accessibility.md",
+        "./agents/ux-audit-control-transparency.md",
+        "./agents/ux-audit-edge-cases.md",
+        "./agents/ux-audit-flow-integrity.md",
+        "./agents/ux-audit-jtbd.md",
+        "./agents/ux-audit-orchestrator.md",
+        "./agents/ux-audit-trust-copy.md",
+        "./agents/ux-audit-usability-heuristics.md",
+        "./agents/ux-audit-usability-test.md",
+        "./agents/ux-flow-completion.md"
+      ]
+    }
+  ]
+}
