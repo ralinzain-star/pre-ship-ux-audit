@@ -21,6 +21,36 @@ Two ways to install: run `./install.sh` for symlinks, or add it as a plugin usin
 `.claude-plugin` manifest. The symlink route is the one to use while you are still editing,
 because changes are live with no reinstall.
 
+## The pipeline
+
+Diagram in `docs/`, as HTML and PDF. The same thing in words:
+
+- **Take stock** of whatever exists: spec, Figma, critical user flow, JTBD, staging URL.
+  The answer decides how deep the next two steps go, and the flow and the JTBD are assessed
+  independently, because a team often has one and not the other.
+  - **Nothing yet** → complete the critical user flow and derive the JTBD. Anything the AI
+    filled in is marked as such, so an invention is never mistaken for a decision.
+  - **Already there** → validate what exists and fill the gaps. Nothing is redone: a second
+    competing set is worse than none, because the team argues about which is right instead
+    of about the feature.
+  - **Round 2 onward** → skip both. Reuse the frozen JTBD.
+- **Seven auditors run at once**, each owning its own checks so one problem is never counted
+  twice.
+  - Four from the checklist: Flow Integrity, Control & Transparency, Trust & Copy, Edge Cases.
+  - Two more inspections: usability heuristics, accessibility.
+  - One live test that opens a browser and attempts each JTBD on the real build. Where its
+    observations contradict the six inspections, the observation wins.
+  - Each returns JSON: one result per check, plus findings.
+- **`score_audit.py` does the arithmetic**, never the model. Independent agents do not agree
+  about what 100 means, and doing it once the same way every round is the only thing that
+  makes Round 2 comparable to Round 1.
+  - **Verdict** comes from the Critical count: can we ship?
+  - **Score** comes from the weighted pass rate: did this round improve?
+  - **Coverage** is the share of checks that were verifiable: is the score worth anything?
+- **The loop closes back at the auditors**, not at the top. Taking stock and completing the
+  flow happen once. Re-deriving the JTBD every round would measure each new design against
+  itself, which is the thing the scoring exists to prevent.
+
 ## How it is wired
 
 Claude Code only loads skills from `~/.claude/skills` and agents from `~/.claude/agents`.
