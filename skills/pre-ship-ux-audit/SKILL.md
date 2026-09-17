@@ -8,8 +8,8 @@ description: >
   nine specialist auditor agents, and scores them with a script so rounds are comparable. Use whenever a feature is about to ship, when
   reviewing a spec or Figma flow before engineering handoff, when someone wants to know if
   users can actually complete a task, or on "UX audit", "JTBD", "jobs to be done", "eval this feature", "pre-ship
-  check", "UX review", "design QA", "usability test", "跑一次完整檢查", "上線前檢查",
-  "幫我 audit 這個 flow", "這樣可以上線嗎". Also use when asked what could go wrong with a
+  check", "UX review", "design QA", "usability test", "run the full check",
+  "audit this flow", "is this ready to ship". Also use when asked what could go wrong with a
   feature, whether a flow is missing states, error handling, confirmations or edge cases,
   when findings need prioritising for engineering, when comparing this round against a
   previous audit, or when logging results to the Notion UX audit log. Prefer this over a

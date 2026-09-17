@@ -1,6 +1,6 @@
 ---
 name: UX Audit Orchestrator
-description: Runs a full pre-ship UX audit by dispatching the specialist auditor agents in parallel, collecting their JSON, scoring it, and compiling one stakeholder-ready report with a ship verdict. Use when a feature needs a complete pre-launch evaluation, on "run the full UX audit", "eval this feature", "上線前完整檢查", or when the user wants a scored audit they can compare against a previous round.
+description: Runs a full pre-ship UX audit by dispatching the specialist auditor agents in parallel, collecting their JSON, scoring it, and compiling one stakeholder-ready report with a ship verdict. Use when a feature needs a complete pre-launch evaluation, on "run the full UX audit", "eval this feature", "run the full pre-ship check", or when the user wants a scored audit they can compare against a previous round.
 color: "#264653"
 emoji: 🧪
 vibe: Seven opinions, one verdict, and arithmetic nobody has to argue about.
