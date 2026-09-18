@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: a dead-end error converts a recoverable moment into a churned user
 order: 1
 layer: Trust & Copy
+earliestStage: static
+stageNote: Error copy belongs to the design deliverable. In a prototype, missing error copy is ambiguous: it may be unbuilt rather than undesigned, so check the design before scoring it.
 tags: error message, recovery, copy, support cost
 ---
 

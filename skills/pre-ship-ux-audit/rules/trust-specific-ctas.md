@@ -4,6 +4,8 @@ impact: NICE_TO_HAVE
 impactDescription: vague buttons add hesitation at exactly the moment you want none
 order: 4
 layer: Trust & Copy
+earliestStage: static
+stageNote: Button labels are visible in any design deliverable.
 tags: CTA, buttons, copy, conversion
 ---
 

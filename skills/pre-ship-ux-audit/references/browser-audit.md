@@ -229,3 +229,66 @@ persuasive thing in the report, and it is also the only way a reader can check y
 - If a simulation did not take effect (check `read_network_requests`), the result is
   `not_verifiable`, not `pass`. Recording a pass you did not actually observe is worse than
   recording a gap.
+
+## Saving screenshots
+
+The extension takes a screenshot and shows it to you, but `save_to_disk` writes no file in
+this harness. Verified, twice. A report with no pictures is the result, unless you do this.
+
+The way through: **serve the build yourself, and let the page post its own screenshots back.**
+
+```bash
+python3 scripts/shot_server.py --root <dir with the build> --shots <audit>/shots --port 8903
+```
+
+It serves the directory and accepts `POST /_shot/<name>.png`, writing into `--shots`. Same
+origin, so no download prompt and no cap on how many you take.
+
+Then, once in the page:
+
+```js
+await new Promise((res, rej) => {
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload = res; s.onerror = rej; document.head.appendChild(s);
+});
+window.__shot = async (name, sel) => {
+  const el = sel ? document.querySelector(sel) : document.body;
+  const c = await html2canvas(el, { scale: 1, useCORS: true, logging: false,
+                                    windowWidth: document.documentElement.clientWidth });
+  const b = await new Promise(r => c.toBlob(r, 'image/png'));
+  return (await (await fetch('/_shot/' + name, { method: 'POST', body: b })).text());
+};
+```
+
+`await __shot('optimize-run-no-exit.png', '.drawer')` writes the file and returns its path.
+
+Rules that make the pictures worth having:
+
+- **Drive to the defect first, then shoot.** A screenshot of the happy path proves nothing.
+  Open the drawer, start the run, close it, then capture what is left.
+- **Pass a selector.** A full-page shot of this build is 6239px tall and shows the reader
+  nothing. Frame the element the finding is about.
+- **Name the file after the finding**, not `shot-3.png`.
+- Put the path in the finding's `screenshot` field. The report embeds it.
+- Serving locally also gets you real pointer events, which a cross-origin design iframe does
+  not. Check the build is self-contained first: if it pulls scripts from elsewhere, serving it
+  yourself changes what you are auditing, and that makes it the wrong artefact to audit.
+
+### What this does not capture
+
+**html2canvas renders in-flow content faithfully and can fail silently on overlays.** On the
+Autopilot build it rendered the feed exactly, and produced a blank canvas of the correct size
+for a modal. Ruled out, in this order: entrance animation (forced every animation to finish),
+opacity and transform on ancestors (all 1 and none), shadow DOM (no shadow roots anywhere),
+and the clone dropping the node (an `onclone` hook found the element present, `visible`,
+`display: flex`, 489px tall, with its text and three children). It paints nothing anyway.
+
+So: check your first capture before you take fifty. If the overlay comes back blank, say so in
+the report rather than shipping an empty picture, and fall back to the verbatim on-screen
+strings, which is what the evidence log is for.
+
+A real screenshot needs the browser window visible and the tab active. `save_to_disk` on the
+extension returns no path, verified twice, and macOS `screencapture` works but captures the
+screen, so it needs the window on-screen rather than a backgrounded tab. Neither is available
+to an agent driving a background tab, which is the normal case.

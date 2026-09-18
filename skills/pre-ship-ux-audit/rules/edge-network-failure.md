@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: the most common real-world failure, and usually the least designed
 order: 2
 layer: Edge Cases
+earliestStage: build
+stageNote: There is no network layer to fail before a real build. In a prototype, score only whether a failure state is REPRESENTABLE in the interface, and say that is what you scored.
 tags: network, timeout, offline, retry, resilience
 ---
 

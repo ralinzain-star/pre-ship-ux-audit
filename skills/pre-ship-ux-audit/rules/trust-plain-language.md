@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: copy that confuses or alarms suppresses the action it is attached to
 order: 2
 layer: Trust & Copy
+earliestStage: static
+stageNote: Copy is readable wherever it is written down.
 tags: copy, tone, jargon, plain language, localisation
 ---
 

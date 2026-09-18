@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: unexplained recommendations are ignored or distrusted, wasting the feature entirely
 order: 3
 layer: Trust & Copy
+earliestStage: static
+stageNote: The reason is copy. Whether the reason is truthful needs a build with real model output.
 tags: AI, recommendations, explainability, adoption
 ---
 

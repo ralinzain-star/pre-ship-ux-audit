@@ -36,6 +36,8 @@ def rel(p):
 
 # ---------------------------------------------------------------- collect
 rule_files = {p.stem for p in ROOT.glob("rules/*.md") if not p.name.startswith("_")}
+STAGES = ["spec", "static", "prototype", "build"]
+
 rule_impacts = {}
 for p in ROOT.glob("rules/*.md"):
     if p.name.startswith("_"):
@@ -47,6 +49,15 @@ for p in ROOT.glob("rules/*.md"):
         rule_impacts[p.stem] = m.group(1)
     if not re.search(r"^order:\s*\d+\s*$", p.read_text(), re.M):
         err(rel(p), "rule file has no `order:`, build_agents will sort it last")
+    m = re.search(r"^earliestStage:\s*(\w+)\s*$", p.read_text(), re.M)
+    if not m:
+        err(rel(p), "rule file has no `earliestStage:`, score_audit cannot tell whether "
+                    "this check is answerable by the artefact under audit")
+    elif m.group(1) not in STAGES:
+        err(rel(p), f"unknown earliestStage `{m.group(1)}`, expected one of {STAGES}")
+    elif not re.search(r"^stageNote:\s*\S", p.read_text(), re.M):
+        err(rel(p), "rule file declares earliestStage but no `stageNote:` saying what an "
+                    "earlier artefact can still answer")
 
 agent_files = sorted(AGENTS.glob("ux-*.md"))
 if not agent_files:
@@ -97,6 +108,9 @@ for p in agent_files:
             if rule_impacts.get(cid) != impact:
                 err(name, f"check `{cid}` declares {impact} but rules/{cid}.md says {rule_impacts.get(cid)}")
         else:
+            if not re.search(r"^\|\s*`" + re.escape(cid) + r"`\s*\|\s*[A-Z_]+\s*\|\s*(spec|static|prototype|build)\s*\|", text, re.M):
+                err(name, f"check `{cid}` is not in rules/ and its table gives no "
+                          f"earliestStage column, so score_audit can never defer it")
             if "declare" not in text or "impact" not in text:
                 err(name, f"check `{cid}` is not in rules/ and the agent never says to declare impact inline")
 

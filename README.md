@@ -21,6 +21,28 @@ Two ways to install: run `./install.sh` for symlinks, or add it as a plugin usin
 `.claude-plugin` manifest. The symlink route is the one to use while you are still editing,
 because changes are live with no reinstall.
 
+## What this does not do
+
+It does not design. **A reviewer's comment proposes what the product should be. This audit's
+recommendations repair what has already been decided.**
+
+The difference is not how specific each one is: "wire the Saved list to the job title rather
+than the list index" is as concrete as anything a person writes in a comment thread. The
+difference is authority. A designer looking at a job list can say "add a preview pane", which
+is a new thing to build. The audit can say the list keeps no record of which jobs you have
+already read, which repairs the list that exists.
+
+So do not read a low score as "this design is wrong". Read it as "these decisions do not hold
+up on the unhappy paths". Those are different problems with different owners.
+
+What it is for is the layer people cannot see by looking. On the run that produced this
+repo's example output, a team of five had left 29 comments on the same build, and none of them
+said that auto-submit mode promises an approval step that never comes, or that the readiness
+score is capped one point below the bar the copy tells you to clear. Those are mechanisms, and
+you find them by reading the build, not by looking at it.
+
+Use it as the last honest read before real users arrive. Use a design review for the rest.
+
 ## The pipeline
 
 Diagram in `docs/`, as HTML and PDF. The same thing in words:

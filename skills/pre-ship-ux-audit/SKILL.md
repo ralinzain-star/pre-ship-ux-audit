@@ -253,7 +253,8 @@ Two supporting pieces:
 Scoring is done by a script, not by the model:
 
 ```bash
-python3 scripts/score_audit.py <results-dir> --feature "Name" --round 2 --previous <round-1-dir>
+python3 scripts/score_audit.py <results-dir> --stage prototype \
+  --feature "Name" --round 2 --previous <round-1-dir> --previous-stage static
 ```
 
 Independent agents will not agree about what 100 means, and models are unreliable at consistent
@@ -265,10 +266,37 @@ from the weighted pass rate. A feature can score 88 and still be do-not-ship, be
 Critical that loses user data outweighs twelve passes. Let the score drive the verdict and
 people start optimising the number.
 
-**A URL changes everything.** Without one, the audit is inspection: the agents predict what
-the build does and mark a large share of the checklist `not_verifiable`, which caps coverage
-structurally. With one, they force the states into existence and verify. Ask for a URL
-before running a scored audit, and say in the report which kind of round it was.
+**Establish the stage before you score anything.** A spec, a Figma file, a clickable
+prototype and a staging build are four different witnesses, and they can testify to
+different things.
+
+| Stage | Artefact | What absence means |
+|---|---|---|
+| `spec` | Tickets, a PRD | Nothing. Specs are brief by nature |
+| `static` | Figma frames, screenshots | A state that is not drawn was not designed |
+| `prototype` | Clickable, staged data, no backend | Ambiguous: unbuilt looks exactly like undesigned |
+| `build` | Running on staging or production | Absence is real |
+
+Every rule declares `earliestStage`: the earliest stage at which absence is trustworthy.
+Checks below it are `out_of_stage` and are excluded from the score rather than failed.
+Otherwise the number measures the artefact instead of the design, and a prototype round
+cannot be compared with the build round that follows it.
+
+Each rule also carries a `stageNote` saying what an earlier artefact can still answer.
+Read it. Several rules split: there is no network to fail in a prototype, but whether the
+interface can *represent* a failure is a design question you can answer today.
+
+**Stage gating is not enough on its own.** It works per check, and the more common
+contamination is per finding: a real observation that rests on seeded demo data, an unwired
+control or a hardcoded value. So every finding also carries `evidence_class`, and only
+`design` findings score. The test is a counterfactual: would this still be true if the same
+design were built properly? Do not use it as an escape hatch: when the artefact contradicts
+itself, staging cannot explain it.
+
+**A URL still changes everything.** Without one, the audit is inspection: the agents predict
+what the build does and mark a large share of the checklist `not_verifiable`, which caps
+coverage structurally. With one, they force the states into existence and verify. Ask for a
+URL before running a scored audit, and say in the report which stage it ran at.
 
 **Report coverage next to the score, always.** 90 at 40% coverage does not mean 90% good, it
 means most of the feature could not be examined. On a pre-ship audit that is the headline.
@@ -310,7 +338,46 @@ Regenerate it after editing any rule with `python3 scripts/build_agents.py`.
 
 ## Writing style
 
-Write for a teammate with no design background. Never sugarcoat: if something is broken,
-say it clearly. Frame every issue in user **and** business terms, because a PM cannot
-prioritise "this feels off". Flag any finding you inferred rather than verified. Do not
-use em-dashes in anything produced for Iris: use a colon, a comma, or restructure.
+Write for a teammate with no design background. Never sugarcoat: if something is broken, say
+it. Frame every issue in user **and** business terms, because a PM cannot prioritise "this
+feels off". Flag anything you inferred rather than verified. No em-dashes in anything
+produced for Iris: use a colon, a comma, or restructure.
+
+### Short and hard, not long and hedged
+
+A finding is read by someone deciding what to fix this sprint. Length does not make a
+finding more convincing, it makes it easier to skip. The measured average before this rule
+existed was five sentences where two were asked for.
+
+Budgets, enforced by `score_audit.py`, which lists every finding that busts them:
+
+| Field | Budget | What belongs there |
+|---|---|---|
+| `title` | 100 chars | The defect, stated. Not the fix, not the cause |
+| `problem` | 300 chars | What the user hits. One concrete moment |
+| `impact` | 200 chars | What it costs. One consequence, named |
+| `recommendation` | 250 chars | What to change. One instruction |
+
+**Lead with the defect.** "The optimize run dies if the drawer closes" beats "During the form
+stage the footer renders a labelled Cancel, and the moment the run starts...".
+
+**Put the proof in `evidence`, not in the prose.** Line numbers, what you clicked, what
+happened. That field has no budget: be as exact as you like. The four above are the summary a
+PM reads, and they stay short *because* the evidence is elsewhere.
+
+**Cut these, every time:**
+
+| Cut | Why |
+|---|---|
+| Re-stating the rule before the finding | They can read the rule |
+| Narrating how you found it | Belongs in `evidence` |
+| Two examples where one lands | The second one dilutes the first |
+| "It is worth noting", "It should be said" | Say the thing |
+| A sentence hedging the one before it | Decide, then write one sentence |
+| The mechanism when the symptom is enough | Keep the mechanism in `evidence` |
+
+**One rule holds this together.** If the reader would act the same way after reading half of
+it, the other half is padding. Cut the half that changes nothing.
+
+Severity does not buy length. A Critical gets the same budget: it earns attention by being
+Critical, not by being long.

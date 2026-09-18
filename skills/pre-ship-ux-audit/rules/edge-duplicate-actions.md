@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: duplicates corrupt the user's data and burn credits or spend twice
 order: 3
 layer: Edge Cases
+earliestStage: prototype
+stageNote: Needs something clickable twice. A design can still be checked for a drawn conflict or already-submitted state.
 tags: idempotency, double submit, race condition, conflict
 ---
 

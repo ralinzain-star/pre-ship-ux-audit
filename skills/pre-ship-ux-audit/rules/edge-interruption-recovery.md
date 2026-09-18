@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: losing user input mid-flow is the single most reliable way to lose the user
 order: 4
 layer: Edge Cases
+earliestStage: build
+stageNote: Persistence is a build concern. A prototype that loses state on reload is telling you nothing about the product. Score this only against a build, or against an explicit spec promise the artefact contradicts.
 tags: draft, autosave, session, recovery, interruption
 ---
 

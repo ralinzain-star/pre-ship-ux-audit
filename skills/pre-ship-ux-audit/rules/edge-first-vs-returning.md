@@ -4,6 +4,8 @@ impact: NICE_TO_HAVE
 impactDescription: one screen serving both audiences under-serves both
 order: 5
 layer: Edge Cases
+earliestStage: prototype
+stageNote: Needs two reachable entry states. Beware staged demo data: a prototype seeded with a populated account cannot testify about a real new one, so drop to not_verifiable rather than failing it.
 tags: onboarding, returning user, empty state, dead end
 ---
 

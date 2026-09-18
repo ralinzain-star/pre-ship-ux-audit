@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: users hit a wall mid-flow after investing effort, the worst place to drop out
 order: 2
 layer: Flow Integrity
+earliestStage: spec
+stageNote: The order of steps and what each one needs is a property of the flow itself, so a written spec can answer this in full.
 tags: sequencing, gating, drop-off, dead end
 ---
 

@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: a flow with no exit traps users, who then leave the product rather than the flow
 order: 1
 layer: Control & Transparency
+earliestStage: static
+stageNote: Whether an exit control was drawn is visible in the design. Whether it actually preserves work needs a build.
 tags: exit, undo, cancel, escape hatch, agency
 ---
 

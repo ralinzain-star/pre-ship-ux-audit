@@ -120,13 +120,92 @@ score yourself, and do not write prose around the JSON.
   "findings": [
     { "title": "", "rule": "<check id>", "severity": "critical | major | nice_to_have",
       "screens": ["<frame or step>"], "problem": "", "impact": "", "recommendation": "",
-      "confidence": "verified | inferred", "recurring_from_round": <int, omit if new> }
+      "confidence": "verified | inferred", "expected": "<what should be true, 120>", "actual": "<what it does, 160>", "fix": "<imperative, 70 chars>", "decision_needed": "<only if blocked>", "evidence_class": "design | fidelity-artifact | unknown", "recurring_from_round": <int, omit if new> }
   ]
 }
 ```
 
 Every check you own appears in `checks` exactly once, whether it passed or not. A `fail`
 should usually have a matching finding.
+
+**The report leads with a two-column table**, what should be true next to what is. Both fields
+are required on every Critical and Major:
+
+- `expected`: the specific thing this build should do, 120 chars. Write it so the reader
+  agrees before they read the right column. "A warning about a weak resume appears only when
+  the resume is weak".
+- `actual`: what it does instead, 160 chars. "Fires on a 9.6 Top match. The headline is a
+  hardcoded string".
+
+**Do not restate your rule.** Without `expected` the script falls back to the rule's title,
+which reads as a principle rather than a defect and tells the reader nothing about this build.
+It names every finding that forces the fallback, so this is checked, not hoped for.
+
+Each row must stand alone. If it only makes sense with the rest of the report next to it,
+rewrite it.
+
+**Two fields feed the fix-scope table**, which is one row per defect and is what a PM scopes
+the sprint from:
+
+- `fix`: the change, in the imperative, 70 chars. "Wire Saved to the job title, not the list
+  index". Not the symptom restated. The full instruction stays in `recommendation`.
+- `decision_needed`: set it **only** when the fix cannot be specified until someone answers a
+  product question, such as whether a quota ships at all. It marks the row blocked. An
+  expensive fix is not a blocked one: cost is engineering's call.
+
+### Keep it short, the script checks
+
+| Field | Budget | What belongs there |
+|---|---|---|
+| `title` | 100 chars | The defect, stated. Not the fix, not the cause |
+| `problem` | 300 chars | What the user hits. One concrete moment |
+| `impact` | 200 chars | What it costs. One consequence, named |
+| `recommendation` | 250 chars | What to change. One instruction |
+
+`score_audit.py` lists every finding that busts a budget, by name.
+
+**Put the proof in `evidence`, which has no budget.** Line numbers, what you clicked, what
+happened, what you ruled out: be as exact as you like there. The four fields above are the
+summary a PM reads to decide what to fix this sprint, and they stay short *because* the
+evidence sits somewhere else. You are not losing the detail, you are moving it.
+
+Lead with the defect. "The optimize run dies if the drawer closes" beats a sentence that
+starts with what the footer renders during the form stage.
+
+Cut, every time: re-stating the rule, narrating how you found it, a second example where the
+first landed, "it is worth noting", a sentence that hedges the one before it, and the
+mechanism when the symptom is enough.
+
+If the reader would act the same way after reading half a field, cut that half. Severity buys
+no extra length: a Critical earns attention by being Critical.
+
+### Stage, and what your evidence can carry
+
+You are given the artefact's stage: `spec`, `static`, `prototype` or `build`. It decides how
+much a missing thing is allowed to mean.
+
+Each rule you own declares `earliestStage` and a `stageNote` in its frontmatter. If the
+artefact is earlier than a rule's `earliestStage`, report that check as `out_of_stage`
+rather than guessing. It is excluded from the score, not failed. Read the `stageNote`
+first: several rules have a half you can still answer early, and answering that half is
+worth more than deferring the whole check.
+
+Then mark every finding with **`evidence_class`**:
+
+- `design`: it is about a decision someone made. It scores.
+- `fidelity-artifact`: real, but it rests on how the demo was staged: seeded data, an
+  unwired control, a hardcoded value, a stub. Reported separately, does not score.
+- `unknown`: you could not tell. It scores, and it says so.
+
+The test is a counterfactual: **would this still be true if the same design were built
+properly?** A link that goes nowhere because the page does not exist yet is a fidelity
+artefact. A link that goes to the wrong page on purpose is a design defect.
+
+Both mistakes cost you. Marking a real defect as a fidelity artefact hides it, and the
+artefact contradicting itself is never staging: if one operation survives being closed and
+an identical one beside it does not, someone decided that. Marking staging as a defect
+sends the team to fix a prototype. When you genuinely cannot tell, say `unknown` and write
+one line on what would settle it.
 
 ## Scoring discipline
 

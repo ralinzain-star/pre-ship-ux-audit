@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: one mis-click causes permanent data loss and a support ticket you cannot resolve
 order: 2
 layer: Control & Transparency
+earliestStage: static
+stageNote: A confirm step or undo affordance is drawn or absent. Whether the underlying action is truly irreversible needs a build.
 tags: confirmation, destructive action, data loss, undo
 ---
 

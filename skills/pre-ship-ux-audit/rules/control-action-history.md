@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: without a record, users cannot verify or dispute what happened, so they stop trusting the output
 order: 4
 layer: Control & Transparency
+earliestStage: static
+stageNote: Whether a history surface exists is a design question. Whether it is complete and accurate needs real data.
 tags: history, audit trail, verification, trust
 ---
 

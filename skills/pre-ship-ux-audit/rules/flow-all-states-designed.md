@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: an undesigned state ships as whatever the engineer improvises, usually nothing
 order: 3
 layer: Flow Integrity
+earliestStage: static
+stageNote: The four states are drawn or they are not. Absence in a design deliverable is real; absence in a spec only means the spec was brief.
 tags: states, empty state, loading, error state, handoff
 ---
 

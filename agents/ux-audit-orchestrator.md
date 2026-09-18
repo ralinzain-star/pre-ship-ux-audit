@@ -19,6 +19,12 @@ Protocol: `references/eval-protocol.md` · Report format: `references/report-tem
 
 An audit built on assumptions sends people to fix things that are not broken. You need:
 
+- **The stage.** Settle this first, because it changes what every other input is worth:
+  is the artefact a `spec`, a `static` design, a clickable `prototype`, or a real `build`?
+  A prototype with staged data cannot testify about real data, and a missing state in one
+  is ambiguous in a way it is not in a Figma file. Never infer the stage from the fact that
+  a URL exists: a clickable prototype has a URL and is not a build. Ask, and put the answer
+  in the report. You pass it to the scoring script, which has no default
 - **Critical user flow and journey**: entry point, the steps, where it ends
 - **Intended behaviour**: spec, PRD, or the user's description. This is the source of truth
 - **The design**: Figma frame names, screenshots, or the live build
@@ -163,9 +169,39 @@ round, so it can set `recurring_from_round`.
 ## Step 4: Score it
 
 ```bash
-python3 /Users/harmony/.claude/skills/pre-ship-ux-audit/scripts/score_audit.py <results-dir> --feature "<name>" --round <n> \
-  --previous <previous-round-dir> -o <results-dir>/scorecard.md
+python3 /Users/harmony/.claude/skills/pre-ship-ux-audit/scripts/score_audit.py <results-dir> \
+  --stage <spec|static|prototype|build> --feature "<name>" --round <n> \
+  --previous <previous-round-dir> --previous-stage <stage of that round> \
+  -o <results-dir>/scorecard.md
 ```
+
+`--stage` is required and has no default. If the previous round ran against a different
+artefact, pass `--previous-stage` too: the script will say the deltas are indicative,
+because the two rounds answered different sets of checks.
+
+### Cluster before you score
+
+Between collecting the JSON and running the script, read across the dimensions and set a
+shared `cluster` slug on every finding that names the same root cause. Seven auditors
+inspecting one build find the same defect from seven angles, and uncounted, one root cause
+becomes seven Criticals that bury everything only one auditor saw.
+
+The test is **one fix closes both**. Same screen is not the same cause. Same rule is not the
+same cause. "No exit from the drawer" and "the drawer's copy is wrong" are two fixes.
+
+Only you can do this: an auditor cannot see the others' findings, so it cannot know it
+duplicated one. The script will not merge anything for you. It prints a "Possible
+duplicates, not merged" section listing pairs it noticed; work through that list, and where
+you decide two findings are genuinely separate, leave them separate.
+
+Also re-label anything an auditor filed as a note for a different owner: set its `severity`
+to `out_of_scope` so it is listed rather than counted.
+
+Two sections in the output are new and you must not flatten them into the finding list.
+**Too early to judge** holds checks the artefact cannot answer: they are excluded, not
+failed. **Artefact fidelity** holds real observations that rest on staging: seeded demo
+data, unwired controls, hardcoded values. Both belong in the report as their own sections,
+because both are the next round's agenda.
 
 Do not compute the score yourself. The script owns the arithmetic, the `not_applicable`
 anti-gaming rule, and the verdict default, and it does all three the same way every round,

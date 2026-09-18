@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: silence during processing reads as failure and drives abandonment and duplicate submissions
 order: 4
 layer: Flow Integrity
+earliestStage: static
+stageNote: A loading or progress frame is part of the design deliverable. Whether the timing feels right needs a prototype.
 tags: system status, feedback, latency, perceived performance
 ---
 

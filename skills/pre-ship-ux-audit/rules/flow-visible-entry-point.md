@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: a feature users cannot find has zero activation regardless of quality
 order: 1
 layer: Flow Integrity
+earliestStage: static
+stageNote: A design shows whether an entry affordance was drawn. A spec can describe one that nobody drew.
 tags: entry point, discoverability, activation, first run
 ---
 

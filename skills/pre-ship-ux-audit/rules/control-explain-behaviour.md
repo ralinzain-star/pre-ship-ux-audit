@@ -4,6 +4,8 @@ impact: MAJOR
 impactDescription: unexplained system behaviour reads as malfunction and generates support load
 order: 3
 layer: Control & Transparency
+earliestStage: static
+stageNote: The explanation is copy, and copy belongs to the design deliverable.
 tags: transparency, mental model, automation, support cost
 ---
 

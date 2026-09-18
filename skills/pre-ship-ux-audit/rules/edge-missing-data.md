@@ -4,6 +4,8 @@ impact: CRITICAL
 impactDescription: the users most likely to hit this are new users, so the failure lands on activation
 order: 1
 layer: Edge Cases
+earliestStage: prototype
+stageNote: Judging whether degradation is visible or silent needs something you can feed different data to. A design can still be checked for a drawn degraded state.
 tags: missing data, empty profile, new user, activation
 ---
 
