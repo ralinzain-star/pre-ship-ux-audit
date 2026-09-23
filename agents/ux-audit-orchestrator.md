@@ -197,6 +197,14 @@ you decide two findings are genuinely separate, leave them separate.
 Also re-label anything an auditor filed as a note for a different owner: set its `severity`
 to `out_of_scope` so it is listed rather than counted.
 
+### Ask about the language once
+
+When you hand over the report, if the reader does not work in English, offer a translated
+copy. Follow `references/translating-the-report.md`: it stays a separate file beside the
+English one, and the English stays canonical because the findings cite code. Do not translate
+the product strings, the rule ids, the code or the scoring vocabulary, because those are what
+the reader searches for.
+
 Two sections in the output are new and you must not flatten them into the finding list.
 **Too early to judge** holds checks the artefact cannot answer: they are excluded, not
 failed. **Artefact fidelity** holds real observations that rest on staging: seeded demo

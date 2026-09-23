@@ -325,6 +325,18 @@ Rules pull against each other. When they do:
 - **First-time vs Returning**: split the screen rather than averaging them. An averaged
   screen under-serves both.
 
+## A reader who does not work in English
+
+Translate the finished scorecard, do not make the agents write in another language: an
+auditor writing a second language while reading code writes worse findings in both. Scoring
+stays the canonical artefact and stays English, because the findings cite code.
+
+`references/translating-the-report.md` has the rules. The one that matters: anything the
+reader will search for in the build stays in the original, which covers product strings,
+rule ids, code and the scoring vocabulary. Translate the prose around them.
+
+The translation is a snapshot. Re-running the score does not update it.
+
 ## Logging the audit
 
 Past audits live in a Notion database. Read `references/notion-log.md` when the user wants

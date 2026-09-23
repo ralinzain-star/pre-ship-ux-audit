@@ -88,9 +88,9 @@ simulation did not actually take effect, check `read_network_requests` and recor
 
 ## Output contract
 
-Return exactly one JSON object, nothing else. The orchestrator collects six of these and
-runs `scripts/score_audit.py` on them, which does all the arithmetic: do not compute a
-score yourself, and do not write prose around the JSON.
+Return exactly one JSON object, nothing else. The orchestrator collects these and runs
+`scripts/score_audit.py` on them, which does all the arithmetic. Do not compute a score
+yourself, and do not write prose around the JSON.
 
 ```json
 {
@@ -99,13 +99,34 @@ score yourself, and do not write prose around the JSON.
   "feature": "<the feature you were given>",
   "round": <round number, or 1>,
   "checks": [
-    { "rule": "<check id>", "result": "pass | fail | not_verifiable | not_applicable",
-      "reason": "<required for not_applicable and not_verifiable>" }
+    { "rule": "<check id>",
+      "result": "pass | fail | not_verifiable | not_applicable | out_of_stage",
+      "reason": "<required for anything but pass and fail>" }
   ],
   "findings": [
-    { "title": "", "rule": "<check id>", "severity": "critical | major | nice_to_have",
-      "screens": ["<frame or step>"], "problem": "", "impact": "", "recommendation": "",
-      "confidence": "verified | inferred", "expected": "<what should be true, 120>", "actual": "<what it does, 160>", "fix": "<imperative, 70 chars>", "decision_needed": "<only if blocked>", "evidence_class": "design | fidelity-artifact | unknown", "recurring_from_round": <int, omit if new> }
+    {
+      "title": "<the defect, stated>",
+      "rule": "<check id>",
+      "severity": "critical | major | nice_to_have | out_of_scope",
+      "evidence_class": "design | fidelity-artifact | unknown",
+
+      "step_order": <position in the completed flow>,
+      "step_name": "<short label for that step>",
+      "where": "<how to get to it>",
+      "expected": "<what should be true>",
+      "actual": "<what it does instead>",
+
+      "fix": "<the change, imperative>",
+      "decision_needed": "<only when a product answer is required first>",
+
+      "problem": "<what the user hits>",
+      "impact": "<what it costs>",
+      "recommendation": "<the full instruction>",
+      "evidence": "<line numbers, what you clicked, what happened. No budget>",
+      "screens": ["<frame or step>"],
+      "confidence": "verified | inferred",
+      "recurring_from_round": <int, omit if new>
+    }
   ]
 }
 ```
@@ -113,73 +134,103 @@ score yourself, and do not write prose around the JSON.
 Every check you own appears in `checks` exactly once, whether it passed or not. A `fail`
 should usually have a matching finding.
 
-**The report leads with a two-column table**, what should be true next to what is. Both fields
-are required on every Critical and Major:
+### Report what got fixed, not only what is broken
 
-- `expected`: the specific thing this build should do, 120 chars. Write it so the reader
-  agrees before they read the right column. "A warning about a weak resume appears only when
-  the resume is weak".
-- `actual`: what it does instead, 160 chars. "Fires on a 9.6 Top match. The headline is a
-  hardcoded string".
+When an earlier round raised something and this build fixed it, add it to a top-level
+`closed` array beside `checks` and `findings`:
 
-**Do not restate your rule.** Without `expected` the script falls back to the rule's title,
-which reads as a principle rather than a defect and tells the reader nothing about this build.
-It names every finding that forces the fallback, so this is checked, not hoped for.
+```json
+"closed": [ { "title": "Save meant two different things one screen apart", "round": 2 } ]
+```
 
-Each row must stand alone. If it only makes sense with the rest of the report next to it,
-rewrite it.
+The report prints these, and it prints them before the defect list. A team that only ever
+hears what is still broken concludes the round did not count, and the next round gets less
+honest. Verify the fix rather than trusting the previous round's wording: sometimes a defect
+moved rather than closed, and that is a finding, not a closure.
 
-**Two fields feed the fix-scope table**, which is one row per defect and is what a PM scopes
-the sprint from:
+### The fields, by what they are for
 
-- `fix`: the change, in the imperative, 70 chars. "Wire Saved to the job title, not the list
-  index". Not the symptom restated. The full instruction stays in `recommendation`.
-- `decision_needed`: set it **only** when the fix cannot be specified until someone answers a
+**The journey table**, which leads the report. Ordered by `step_order`, so a reader who does
+not know the feature can follow it top to bottom and watch the build break.
+
+- `step_order` is the position in the completed flow's step table. `step_name` is a short
+  human label, "Optimize run", not "S9".
+- `where` is how to get to it, in one of four forms, best first: a quoted on-screen string, a
+  named control, an action to take, or **the empty place to look at** when the defect is that
+  something is missing. That last form is the one the others cannot do. "The drawer footer,
+  during the run" proves an absence; a quotation can only prove a presence, and most of what
+  this audit finds is absence.
+- `expected` is the specific thing this build should do. Write it so the reader agrees with it
+  before they read the next column.
+- `actual` is what it does instead. Keep the two grammatically parallel, so the difference
+  lands without being explained: "appears only when the resume is weak" against "appears
+  always".
+- **Do not restate your rule in `expected`.** Without it the script falls back to the rule's
+  own title, which reads as a principle rather than a defect and tells the reader nothing
+  about this build. The script names every finding that forces that fallback.
+
+**The fix-scope table**, which is what a PM scopes the sprint from.
+
+- `fix` is the change, in the imperative: "Wire Saved to the job title, not the list index".
+  Not the symptom restated. The full instruction stays in `recommendation`.
+- `decision_needed` is set **only** when the fix cannot be specified until someone answers a
   product question, such as whether a quota ships at all. It marks the row blocked. An
   expensive fix is not a blocked one: cost is engineering's call.
+
+**Scoring.** `severity` is your judgement for this case and may differ from the rule's default
+impact. `out_of_scope` is for something real that belongs to another owner: it is listed,
+never counted. `evidence_class` decides whether the finding scores at all, and is covered
+below.
+
+**The detail**, for whoever fixes it. `problem`, `impact`, `recommendation`, `evidence`,
+`screens`, `confidence`, `recurring_from_round`.
 
 ### Keep it short, the script checks
 
 | Field | Budget | What belongs there |
 |---|---|---|
 | `title` | 100 chars | The defect, stated. Not the fix, not the cause |
+| `where` | 90 chars | One string, one control, one action, or one empty place |
+| `expected` | 120 chars | What should be true. Agreeable on its own |
+| `actual` | 160 chars | What happens instead |
 | `problem` | 300 chars | What the user hits. One concrete moment |
 | `impact` | 200 chars | What it costs. One consequence, named |
 | `recommendation` | 250 chars | What to change. One instruction |
+| `fix` | 70 chars | The change, in the imperative |
 
 `score_audit.py` lists every finding that busts a budget, by name.
 
 **Put the proof in `evidence`, which has no budget.** Line numbers, what you clicked, what
-happened, what you ruled out: be as exact as you like there. The four fields above are the
-summary a PM reads to decide what to fix this sprint, and they stay short *because* the
-evidence sits somewhere else. You are not losing the detail, you are moving it.
+happened, what you ruled out: be as exact as you like there. Everything above is the summary
+someone reads to decide what to fix this sprint, and it stays short *because* the evidence
+sits somewhere else. You are not losing the detail, you are moving it.
 
 Lead with the defect. "The optimize run dies if the drawer closes" beats a sentence that
-starts with what the footer renders during the form stage.
+opens with what the footer renders during the form stage.
 
-Cut, every time: re-stating the rule, narrating how you found it, a second example where the
-first landed, "it is worth noting", a sentence that hedges the one before it, and the
-mechanism when the symptom is enough.
+Cut, every time: restating the rule, narrating how you found it, a second example where the
+first landed, "it is worth noting", a sentence hedging the one before it, and the mechanism
+when the symptom is enough.
 
-If the reader would act the same way after reading half a field, cut that half. Severity buys
-no extra length: a Critical earns attention by being Critical.
+If the reader would act the same after reading half a field, cut that half. Severity buys no
+extra length: a Critical earns attention by being Critical.
 
 ### Stage, and what your evidence can carry
 
 You are given the artefact's stage: `spec`, `static`, `prototype` or `build`. It decides how
 much a missing thing is allowed to mean.
 
-Each rule you own declares `earliestStage` and a `stageNote` in its frontmatter. If the
-artefact is earlier than a rule's `earliestStage`, report that check as `out_of_stage`
-rather than guessing. It is excluded from the score, not failed. Read the `stageNote`
-first: several rules have a half you can still answer early, and answering that half is
-worth more than deferring the whole check.
+Each rule you own declares `earliestStage` and a `stageNote`. If the artefact is earlier than
+a rule's `earliestStage`, report that check `out_of_stage` rather than guessing: it is
+excluded from the score, not failed. Read the `stageNote` first, because several rules have a
+half you can still answer early, and answering that half is worth more than deferring the
+whole check.
 
-Then mark every finding with **`evidence_class`**:
+Then mark every finding with `evidence_class`:
 
 - `design`: it is about a decision someone made. It scores.
-- `fidelity-artifact`: real, but it rests on how the demo was staged: seeded data, an
-  unwired control, a hardcoded value, a stub. Reported separately, does not score.
+- `fidelity-artifact`: real, but it rests on how the demo was staged: seeded data, an unwired
+  control, a hardcoded value, a stub. Reported separately, does not score.
 - `unknown`: you could not tell. It scores, and it says so.
 
 The test is a counterfactual: **would this still be true if the same design were built
@@ -187,10 +238,10 @@ properly?** A link that goes nowhere because the page does not exist yet is a fi
 artefact. A link that goes to the wrong page on purpose is a design defect.
 
 Both mistakes cost you. Marking a real defect as a fidelity artefact hides it, and the
-artefact contradicting itself is never staging: if one operation survives being closed and
-an identical one beside it does not, someone decided that. Marking staging as a defect
-sends the team to fix a prototype. When you genuinely cannot tell, say `unknown` and write
-one line on what would settle it.
+artefact contradicting itself is never staging: if one operation survives being closed and an
+identical one beside it does not, someone decided that. Marking staging as a defect sends the
+team to fix a prototype. When you genuinely cannot tell, say `unknown` and write one line on
+what would settle it.
 
 ## Scoring discipline
 

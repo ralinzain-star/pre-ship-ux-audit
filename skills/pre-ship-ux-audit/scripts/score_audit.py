@@ -63,7 +63,7 @@ OUT_OF_SCOPE = "out_of_scope"
 # A finding is read by someone deciding what to fix this sprint. Length does not make it
 # more convincing, it makes it easier to skip. Proof goes in `evidence`, which has no budget.
 BUDGET = {"title": 100, "problem": 300, "impact": 200, "recommendation": 250,
-          "fix": 70, "expected": 120, "actual": 160}
+          "fix": 70, "expected": 120, "actual": 160, "where": 90}
 # Words that carry no signal when comparing two finding titles.
 _STOP = set("""a an the and or but is are was were be been it its this that these those
 of in on at to for from with without by as into over under after before during
@@ -197,6 +197,10 @@ def tally(reports, impacts, stages=None, stage=None):
             else:
                 findings.append(f)
 
+    jobs, closed = [], []
+    for report in reports:
+        jobs.extend(report.get("jobs", []))
+        closed.extend(report.get("closed", []))
     clusters = cluster_findings(findings)
     overlong = []
     for f in findings + fidelity + notes:
@@ -209,6 +213,8 @@ def tally(reports, impacts, stages=None, stage=None):
     return {
         "stage": stage,
         "clusters": clusters,
+        "jobs": jobs,
+        "closed": closed,
         "notes": notes,
         "suspects": suspect_duplicates(findings),
         "overlong": overlong,
@@ -296,6 +302,118 @@ def _raw(result, key):
     raw = result["raw_counts"][key]
     n = result["counts"][key]
     return f" _({raw} findings)_" if raw != n else ""
+
+
+def render_brief(result, feature, rnd, stage):
+    """The report for an early artefact: what the user cannot do, and what is missing.
+
+    A prototype cannot answer a control-by-control question, and a reader at this stage is
+    not deciding which button to fix. They are deciding what still has to be designed. So
+    the brief leads with the jobs and the gaps, and the detail lives in the full scorecard."""
+    ok, blocked = VERDICT_NOUN[stage]
+    crit = result["counts"]["critical"]
+    verdict = f"🛑 {blocked}" if crit else f"✅ {ok}"
+    jobs = result.get("jobs", [])
+    # Two agents carry task checks: JTBD judges structurally, Usability Test runs them.
+    # Merging the two inflates the denominator and hides the live result, which is the
+    # number that means something. Prefer the live run, fall back to whatever exists.
+    live = [l for l in result["layers"] if l.get("agent") == "usability-test"]
+    src = live or result["layers"]
+    tasks = [c for l in src for c in l["checks"] if c["rule"].startswith("task-")]
+    passed = sum(1 for c in tasks if c["result"] == "pass")
+
+    out = [f"# {feature}" + (f" · Round {rnd}" if rnd else ""), ""]
+    out += [f"**Stage: {stage}**", "", f"## {verdict}", ""]
+    line = f"**{result['score']}/100　·　Critical {crit}**"
+    if tasks:
+        label = "tasks completed" if live else "jobs served"
+        line += f"　·　**{passed} of {len(tasks)} {label}**"
+    out += [line, ""]
+
+    if jobs:
+        out += [
+            "## What the user can and cannot do",
+            "",
+            "| | Job | Works | Blocked by |",
+            "|---|---|---|---|",
+        ]
+        for j in jobs:
+            mark = "✅" if j.get("served") else "❌"
+            pri = " _(primary)_" if j.get("priority") == "primary" else ""
+            out.append(
+                f"| {j.get('id', '')} | {j.get('name', '?')}{pri} | {mark} | "
+                f"{(j.get('blocked_by') or '').replace('|', ' ')} |"
+            )
+        out.append("")
+
+    gaps = [c for c in result["clusters"] if c["severity"] == "critical"]
+    if gaps:
+        out += [
+            f"## What is not designed yet ({len(gaps)})",
+            "",
+            "Not a list of broken controls. These are the things this artefact does not "
+            "contain, which is the question an early build can actually answer.",
+            "",
+        ]
+        rank = {}
+        gaps.sort(key=lambda c: min(
+            [m.get("step_order") or 999 for m in c["members"]] or [999]))
+        for i, c in enumerate(gaps, 1):
+            f = next((m for m in c["members"] if m.get("expected")), c["members"][0])
+            rec = " _(still open from an earlier round)_" if any(
+                m.get("recurring_from_round") for m in c["members"]) else ""
+            out += [
+                f"**{i}. {f.get('expected', f.get('title', '?'))}**{rec}  ",
+                f"{f.get('actual', '')}",
+                "",
+            ]
+
+    closed = result.get("closed", [])
+    if closed:
+        out += [
+            f"## What landed since the last round ({len(closed)})",
+            "",
+            "Say this before the list above, in the room. A team that only hears what is "
+            "still broken concludes the work did not count.",
+            "",
+            *[f"- {c.get('title', '?')}" for c in closed],
+            "",
+        ]
+
+    decisions = []
+    for c in result["clusters"]:
+        for m in c["members"]:
+            if m.get("decision_needed"):
+                decisions.append((m["decision_needed"], m.get("fix") or m.get("title", "")))
+                break
+    if decisions:
+        out += [
+            "## Decide these first, or the fix cannot be specified",
+            "",
+            "| Question | Blocks |",
+            "|---|---|",
+        ]
+        for q, w in decisions:
+            out.append(f"| {q.replace('|', ' ')} | {w.replace('|', ' ')} |")
+        out.append("")
+
+    out += ["## Not measured this round", ""]
+    if result.get("deferred"):
+        names = ", ".join(f"`{c['rule']}`" for c in result["deferred"])
+        out.append(
+            f"**Too early to judge ({len(result['deferred'])}):** {names}. These need a real "
+            "build: there is no network to fail and no persistence to lose here. Excluded "
+            "from the score, not failed."
+        )
+        out.append("")
+    if result.get("fidelity"):
+        out.append(
+            f"**Artefact fidelity ({len(result['fidelity'])}):** real, but resting on seeded "
+            "data or unwired stubs. Re-test at the next stage; if one survives, it counts."
+        )
+        out.append("")
+    out.append("Detail, line numbers and reproduction steps are in the full scorecard.")
+    return "\n".join(out)
 
 
 def delta(current, previous):
@@ -463,22 +581,33 @@ def render(result, feature, rnd, prev=None):
         out += [
             "## What should be true, and what is",
             "",
-            "Left is the rule: what a shipped feature is supposed to do. Right is what this "
-            "build does. Everything else in this report is evidence for one of these rows.",
+            "In the order a user meets them, not in order of severity. A reader who does not "
+            "know the feature can follow this top to bottom and watch it break. **Where** is "
+            "how to get to it: a quoted string, a named control, an action to take, or, when "
+            "the defect is that something is missing, the empty place to look at.",
             "",
-            "| | Should be | Is |",
-            "|---|---|---|",
+            "| Step | | Where | Should be | Is |",
+            "|---|---|---|---|---|",
         ]
-        rank = {"critical": 0, "major": 1}
-        gaps.sort(key=lambda c: (rank.get(c["severity"], 9), -len(c["members"])))
+
+        def key(c):
+            orders = [m.get("step_order") for m in c["members"] if m.get("step_order")]
+            rank = {"critical": 0, "major": 1}
+            return (min(orders) if orders else 999, rank.get(c["severity"], 9))
+
+        gaps.sort(key=key)
+        last = None
         for c in gaps:
-            f = c["members"][0]
+            f = next((m for m in c["members"] if m.get("where")), c["members"][0])
             mark = "🔴" if c["severity"] == "critical" else "🟡"
+            name = next((m.get("step_name") for m in c["members"] if m.get("step_name")), "")
+            shown = "" if name == last else name
+            last = name or last
             exp = f.get("expected") or titles.get(f.get("rule", "")) or f.get("rule", "?")
             act = f.get("actual") or f.get("title", "?")
-            out.append(
-                f"| {mark} | {str(exp).replace('|', ' ')} | {str(act).replace('|', ' ')} |"
-            )
+            anchor = f.get("where") or ""
+            cells = [shown, mark, anchor, str(exp), str(act)]
+            out.append("| " + " | ".join(x.replace("|", " ") for x in cells) + " |")
         out.append("")
 
     scope = [c for c in result["clusters"] if c["severity"] in ("critical", "major")]
@@ -559,6 +688,29 @@ def render(result, feature, rnd, prev=None):
     return "\n".join(out)
 
 
+FRONTMATTER = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
+
+
+def write_keeping_frontmatter(path, body):
+    """Overwrite `path` with `body`, carrying over any YAML frontmatter already there.
+
+    Both outputs are regenerated from the agent JSON on every run, so a re-score
+    rewrites the whole file. Whoever owns the file downstream may have put frontmatter
+    on it: an Obsidian vault indexing the audit, a static site, a doc pipeline. Dropping
+    it on each re-score is a silent loss the author only notices later, so keep it.
+
+    Only a block at the very top counts, and it is copied verbatim. This script does not
+    parse or update it: the score lives in the body, and guessing which keys mean what
+    would be a second source of truth."""
+    path = Path(path)
+    carried = ""
+    if path.exists():
+        match = FRONTMATTER.match(path.read_text())
+        if match:
+            carried = match.group(0) + "\n"
+    path.write_text(carried + body)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("directory", help="directory of per-agent JSON reports")
@@ -578,7 +730,14 @@ def main():
         choices=STAGES,
         help="the stage the previous round ran against, if it differs",
     )
-    ap.add_argument("-o", "--output", default=None, help="write markdown here instead of stdout")
+    ap.add_argument("-o", "--output", default=None, help="write the full scorecard here")
+    ap.add_argument(
+        "--brief",
+        default=None,
+        help="write the short, stage-shaped report here. Written by default at spec, "
+             "static and prototype, where a control-by-control report answers a question "
+             "the artefact cannot.",
+    )
     args = ap.parse_args()
 
     impacts, stages, titles = rule_meta()
@@ -630,9 +789,24 @@ def main():
             print(f"  ... and {len(worst) - 12} more", file=sys.stderr)
         print("", file=sys.stderr)
 
+    # An early artefact cannot answer a control-by-control question, and its reader is not
+    # choosing which button to fix. So below `build`, the short report is the deliverable.
+    brief_path = args.brief
+    if brief_path is None and args.output and args.stage != "build":
+        brief_path = str(Path(args.output).with_name("report.md"))
+    if brief_path:
+        write_keeping_frontmatter(brief_path, render_brief(result, feature, rnd, args.stage))
+        print(f"wrote {brief_path}  (the stage-shaped report, read this one)")
+        if not result.get("jobs"):
+            print(
+                "note: no agent reported a `jobs` array, so the brief has no jobs table. "
+                "The JTBD agent owns it.",
+                file=sys.stderr,
+            )
+
     md = render(result, feature, rnd, prev)
     if args.output:
-        Path(args.output).write_text(md)
+        write_keeping_frontmatter(args.output, md)
         print(
             f"wrote {args.output}  ({result['score']}/100, coverage {result['coverage']}%, "
             f"stage {args.stage}, {len(result['deferred'])} deferred)"

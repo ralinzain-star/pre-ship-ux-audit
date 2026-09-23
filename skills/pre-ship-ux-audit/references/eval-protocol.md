@@ -161,6 +161,10 @@ what 100 means.
       "recommendation": "Add a failure state with the cause and a retry that keeps the job selection.",
       "confidence": "verified",
       "evidence_class": "design",
+      "step_order": 11, "step_name": "Optimize run",
+      "where": "The drawer footer, during the run",
+      "expected": "A failed run says so and offers a retry",
+      "actual": "Both runs always reach 100%. No error copy anywhere",
       "fix": "Add a failure state with a cause and a retry that keeps the selection",
       "decision_needed": "",
       "recurring_from_round": 1
@@ -184,6 +188,16 @@ Field notes:
   not fixed. A finding that has been ignored once is a stronger finding than a fresh one,
   and the report should say which round first raised it.
 - `screens` lists every affected frame. One finding with five screens, never five findings.
+- `where`, `step_order` and `step_name` place the defect in the journey. The report's lead
+  table is ordered by `step_order`, so a reader who does not know the feature can follow it
+  top to bottom and watch the build break.
+  - `step_order` is the position in the completed flow's step table. `step_name` is a short
+    human label for that step, "Optimize run", not "S9".
+  - `where` is how to get to it, 90 chars, in one of four forms, in this order of preference:
+    a quoted on-screen string, a named control, an action to take, or **the empty place to
+    look at** when the defect is that something is missing. That last form is the one the
+    other three cannot do: "the drawer footer, during the run" proves an absence, where a
+    quotation can only prove a presence, and most of what this audit finds is absence.
 - `expected` and `actual` are the report's lead table: **what should be true** next to **what
   is**. Both are required on every Critical and Major.
   - `expected` is the specific thing this build should do, 120 chars, written so the reader
@@ -236,6 +250,42 @@ defects together loses one of them permanently, and that is a judgement, not ari
 Two findings are the same root cause when **one fix closes both**. They are not the same
 just because they sit on the same screen, or cite the same rule: "the drawer has no exit"
 and "the drawer's copy is wrong" are two fixes and two findings.
+
+## The report changes shape with the stage
+
+Below `build`, the deliverable is not the scorecard. An early artefact cannot answer a
+control-by-control question, and its reader is not choosing which button to fix: they are
+deciding what still has to be designed. So the script writes two files, and at `spec`,
+`static` and `prototype` **the short one is the report**.
+
+| File | Who reads it |
+|---|---|
+| `report.md` | The short, stage-shaped report. Jobs, then what is not designed yet |
+| `scorecard.md` | Every finding with line numbers. For whoever fixes it, at `build` |
+
+The short report needs two arrays that the findings cannot supply:
+
+**`jobs`, from the JTBD agent only.** It owns the job set, so it reports it:
+
+```json
+"jobs": [
+  { "id": 1, "name": "Start a search from nothing", "priority": "primary",
+    "served": false, "blocked_by": "No state for a user who has no resume yet" }
+]
+```
+
+`blocked_by` is one clause, the thing standing in the way, not a summary of the findings.
+A job with `served: true` needs no `blocked_by`.
+
+**`closed`, from any agent**, listing what the previous round raised and this build fixed:
+
+```json
+"closed": [ { "title": "Save meant two different things one screen apart", "round": 2 } ]
+```
+
+Report closures as carefully as defects. A team that only hears what is still broken
+concludes the round did not count, and the next round gets less honest. The script puts
+them in the report with that instruction attached.
 
 ## Running the score
 
