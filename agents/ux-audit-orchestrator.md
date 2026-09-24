@@ -179,6 +179,13 @@ python3 /Users/harmony/.claude/skills/pre-ship-ux-audit/scripts/score_audit.py <
 artefact, pass `--previous-stage` too: the script will say the deltas are indicative,
 because the two rounds answered different sets of checks.
 
+### Ask for the spec, and say so if there is none
+
+Coverage needs two sources. Ask for the spec, the tickets or the PRD specifically, alongside
+the build. Without one, Flow Completion can only report `built` and `absent`, and the report
+says so, because a missing spec means every decision in the build is unreviewed and nobody
+can tell design from accident. That is worth stating plainly rather than quietly degrading.
+
 ### Cluster before you score
 
 Between collecting the JSON and running the script, read across the dimensions and set a

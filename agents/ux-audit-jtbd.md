@@ -226,6 +226,7 @@ yourself, and do not write prose around the JSON.
       "step_order": <position in the completed flow>,
       "step_name": "<short label for that step>",
       "where": "<how to get to it>",
+      "page": "<the file or route it is on>",
       "expected": "<what should be true>",
       "actual": "<what it does instead>",
 
@@ -246,6 +247,50 @@ yourself, and do not write prose around the JSON.
 
 Every check you own appears in `checks` exactly once, whether it passed or not. A `fail`
 should usually have a matching finding.
+
+## Served, planned, or neither
+
+Flow Completion classifies every flow element by coverage: `agreed`, `specified-unbuilt`,
+`built-unspecified`, `absent`. Read `references/coverage.md` and its `coverage` array before
+you judge a job.
+
+It changes what `served` can mean, and this is the sharpest thing you do:
+
+| The steps a job rests on | The job is | Say |
+|---|---|---|
+| All `agreed` or `built-unspecified` | **served**, and testable now | Normal judgement |
+| One or more `specified-unbuilt` | **planned, not served** | Name the step and the ticket |
+| One or more `absent` | **not served, and nobody has designed it** | This is the finding |
+
+A job whose path runs through a step nobody has built is not a job with a defect. It is a job
+with no path, and calling it "broken" sends the team to fix a screen instead of designing a
+missing one. The difference between `specified-unbuilt` and `absent` is the difference between
+"it is on the list" and "it is on nobody's list", and a PM needs that distinction more than
+they need a severity.
+
+Set `served: false` for both, and make `blocked_by` say which: "the out-of-credits screen
+nobody has designed" reads differently from "the pricing screen in ticket 6.1, not built yet".
+
+**A job served only by `built-unspecified` steps is worth its own line.** It works, and no
+document says it should. The next refactor can delete it without anybody noticing, and that
+has happened once already in this audit's history: a frozen outcome lost its only mechanism
+when a review screen moved pages.
+
+## The journey map
+
+After the flow and the jobs are settled, write `journey-map.md` from `assets/journey-map.md`.
+It is the artefact that goes on a wall, and it is a **reading** of the flow and the jobs, not
+a third opinion: every claim traces back to one of them or to a finding.
+
+Two rules that decide whether a team trusts it:
+
+- **Evidence, not empathy.** "What they are thinking" comes from a task run, a support
+  ticket, a recording or a quote. With none of those, write the row as a question. An
+  invented emotion row is how a journey map loses a room.
+- **Every phase carries a coverage value.** That is the whole reason it is built after the
+  flow. A phase that reads `absent` shows as a hole in the wall, which is the point.
+
+Three to six phases. Phases are chapters of intent, not screens.
 
 ### You also own the `jobs` array
 
@@ -270,6 +315,10 @@ who has no resume yet", not "several problems with onboarding". Omit it when `se
 job? It may disagree with the Usability Test agent's live result, and that disagreement is
 worth having in the open rather than resolved by one of you.
 
+Add `"coverage": "served" | "planned" | "undesigned"` to each job, from the table above. The
+report uses it to separate the backlog from the blank page, which is the distinction a PM
+needs most at this stage.
+
 ### The fields, by what they are for
 
 **The journey table**, which leads the report. Ordered by `step_order`, so a reader who does
@@ -277,6 +326,9 @@ not know the feature can follow it top to bottom and watch the build break.
 
 - `step_order` is the position in the completed flow's step table. `step_name` is a short
   human label, "Optimize run", not "S9".
+- `page` is the file or route the defect is on, exactly as the artefact names it. The script
+  turns it into a link, so the reader clicks through instead of hunting. **Name the page,
+  never paste a URL**: a pasted URL rots the moment the project moves.
 - `where` is how to get to it, in one of four forms, best first: a quoted on-screen string, a
   named control, an action to take, or **the empty place to look at** when the defect is that
   something is missing. That last form is the one the others cannot do. "The drawer footer,

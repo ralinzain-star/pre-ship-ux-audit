@@ -197,10 +197,12 @@ def tally(reports, impacts, stages=None, stage=None):
             else:
                 findings.append(f)
 
-    jobs, closed = [], []
+    jobs, closed, coverage, journey = [], [], [], []
     for report in reports:
         jobs.extend(report.get("jobs", []))
+        journey.extend(report.get("journey", []))
         closed.extend(report.get("closed", []))
+        coverage.extend(report.get("coverage", []))
     clusters = cluster_findings(findings)
     overlong = []
     for f in findings + fidelity + notes:
@@ -214,7 +216,10 @@ def tally(reports, impacts, stages=None, stage=None):
         "stage": stage,
         "clusters": clusters,
         "jobs": jobs,
+        "journey": journey,
         "closed": closed,
+        # NOT "coverage": that key already holds the verifiable-checks percentage.
+        "flow_coverage": coverage,
         "notes": notes,
         "suspects": suspect_duplicates(findings),
         "overlong": overlong,
@@ -297,6 +302,36 @@ def suspect_duplicates(findings, threshold=0.5):
     return pairs
 
 
+def linkify_tickets(text, tickets):
+    """Turn ticket references in prose into links.
+
+    A report that cites twenty-two tickets and links none of them makes the reader search
+    for each one, which is most of why these documents feel hard. The map lives in one file
+    per project so a moved page is fixed once, not in every finding."""
+    if not text or not tickets:
+        return text
+    base = tickets.get("_base", "https://app.notion.com/p/")
+
+    def sub(m):
+        num = m.group("num") or m.group("num2")
+        page = tickets.get(num)
+        return f"[{m.group(0)}]({base}{page})" if page else m.group(0)
+
+    # A score and a ticket number are the same shape, so only cued references link:
+    # "ticket 6.1", "5.2's", "3.6:", "7.3 says". Turning a score of 8.1 into a link to
+    # ticket 8.1 is worse than missing a citation, so this errs toward missing.
+    text = re.sub(
+        r"(?:(?<=ticket )|(?<=Ticket ))(?P<num>\d\.\d)(?![\d.%])"
+        r"|(?<![\w.\-/])(?P<num2>\d\.\d)(?=\u2019s\b|'s\b|:|\s+(?:AC|QA|TC|says|specifies|requires)\b)",
+        sub, text)
+    fr = tickets.get("FR")
+    if fr:
+        text = re.sub(
+            r"\bFR-\d+\b", lambda m: f"[{m.group(0)}]({base}{fr})", text
+        )
+    return text
+
+
 def _raw(result, key):
     """Show the raw finding count beside the root-cause count when they differ."""
     raw = result["raw_counts"][key]
@@ -337,12 +372,81 @@ def render_brief(result, feature, rnd, stage):
             "| | Job | Works | Blocked by |",
             "|---|---|---|---|",
         ]
+        # "Planned" and "undesigned" both read as not-served, and a PM needs them apart:
+        # one is on a list, the other is on nobody's list.
+        mark_for = {"served": "✅ works", "planned": "🗓 planned", "undesigned": "❌ undesigned"}
         for j in jobs:
-            mark = "✅" if j.get("served") else "❌"
+            cv = j.get("coverage") or ("served" if j.get("served") else "undesigned")
             pri = " _(primary)_" if j.get("priority") == "primary" else ""
             out.append(
-                f"| {j.get('id', '')} | {j.get('name', '?')}{pri} | {mark} | "
-                f"{(j.get('blocked_by') or '').replace('|', ' ')} |"
+                f"| {j.get('id', '')} | {j.get('name', '?')}{pri} | {mark_for.get(cv, cv)} | "
+                f"{linkify_tickets((j.get('blocked_by') or '').replace('|', ' '), result.get('tickets', {}))} |"
+            )
+        out += [
+            "",
+            "**planned** means the path runs through something the spec promises and the "
+            "build does not have yet. **undesigned** means it runs through something nobody "
+            "has put anywhere. The first is a backlog item, the second is a blank page.",
+            "",
+        ]
+        stated = [j for j in jobs if j.get("statement")]
+        if stated:
+            out += ["<details><summary>The jobs in full</summary>", ""]
+            for j in stated:
+                pri = ", primary" if j.get("priority") == "primary" else ""
+                out += [f"**{j.get('id')}{pri}.** {j['statement']}", ""]
+            out += ["</details>", ""]
+
+    cov = result.get("flow_coverage", [])
+    if cov:
+        order = ["absent", "specified-unbuilt", "built-unspecified", "agreed", "built"]
+        by = {k: [c for c in cov if c.get("value") == k] for k in order}
+        label = {
+            "absent": ("Nobody has it", "Not in the spec and not in the build. This is the "
+                       "list the audit exists to produce"),
+            "specified-unbuilt": ("Specified, not built", "Promised in the spec. Backlog, not "
+                                  "defects, unless something already built depends on one"),
+            "built-unspecified": ("Built, never specified", "A decision nobody wrote down, so "
+                                  "nobody reviewed it and the next person cannot tell it was "
+                                  "deliberate"),
+            "agreed": ("Agreed and built", ""),
+            "built": ("In the build", ""),
+        }
+        counts = "　·　".join(
+            f"**{label[k][0]} {len(by[k])}**" if k == "absent" else f"{label[k][0]} {len(by[k])}"
+            for k in order if by[k]
+        )
+        out += ["## Where the flow stands", "", counts, ""]
+        for k in ("absent", "specified-unbuilt", "built-unspecified"):
+            if not by[k]:
+                continue
+            title, why = label[k]
+            out += [f"### {title} ({len(by[k])})", ""]
+            if why:
+                out += [why + ".", ""]
+            out += ["| Element | Kind | Evidence |", "|---|---|---|"]
+            for c in by[k]:
+                note = linkify_tickets(
+                    (c.get("note") or "").replace("|", " "), result.get("tickets", {}))
+                out.append(
+                    f"| {c.get('element', '?').replace('|', ' ')} | {c.get('kind', '')} | "
+                    f"{note} |"
+                )
+            out.append("")
+
+    jr = result.get("journey", [])
+    if jr:
+        tk = result.get("tickets", {})
+        out += [
+            "## The journey, in five moves",
+            "",
+            "| | The user is trying to | Where it costs them | Coverage |",
+            "|---|---|---|---|",
+        ]
+        for ph in jr:
+            out.append(
+                f"| **{ph.get('name', '?')}** | {ph.get('goal', '')} | "
+                f"{linkify_tickets(ph.get('cost', ''), tk)} | {ph.get('coverage', '')} |"
             )
         out.append("")
 
@@ -355,6 +459,14 @@ def render_brief(result, feature, rnd, stage):
             "contain, which is the question an early build can actually answer.",
             "",
         ]
+        if result.get("base_url"):
+            out += [
+                "_The link under each one opens that page at its starting state. It does not "
+                "open the moment described: a link reaches a state only when the product "
+                "gives that state an address, and most of these have none. The italic line "
+                "says what to do once the page is open._",
+                "",
+            ]
         rank = {}
         gaps.sort(key=lambda c: min(
             [m.get("step_order") or 999 for m in c["members"]] or [999]))
@@ -362,9 +474,18 @@ def render_brief(result, feature, rnd, stage):
             f = next((m for m in c["members"] if m.get("expected")), c["members"][0])
             rec = " _(still open from an earlier round)_" if any(
                 m.get("recurring_from_round") for m in c["members"]) else ""
+            page = next((m.get("page") for m in c["members"] if m.get("page")), None)
+            base = result.get("base_url")
+            where = f.get("where") or ""
+            if page and base:
+                from urllib.parse import quote
+                real = result.get("pages", {}).get(page, page)
+                where = f"[{where or page}]({base.replace('{page}', quote(real))})"
+            tk = result.get("tickets", {})
             out += [
-                f"**{i}. {f.get('expected', f.get('title', '?'))}**{rec}  ",
-                f"{f.get('actual', '')}",
+                f"**{i}. {linkify_tickets(f.get('expected', f.get('title', '?')), tk)}**{rec}  ",
+                linkify_tickets(f.get("actual", ""), tk)
+                + (f"  \n_{where}_" if where else ""),
                 "",
             ]
 
@@ -603,9 +724,17 @@ def render(result, feature, rnd, prev=None):
             name = next((m.get("step_name") for m in c["members"] if m.get("step_name")), "")
             shown = "" if name == last else name
             last = name or last
-            exp = f.get("expected") or titles.get(f.get("rule", "")) or f.get("rule", "?")
-            act = f.get("actual") or f.get("title", "?")
+            tk = result.get("tickets", {})
+            exp = linkify_tickets(
+                f.get("expected") or titles.get(f.get("rule", "")) or f.get("rule", "?"), tk)
+            act = linkify_tickets(f.get("actual") or f.get("title", "?"), tk)
             anchor = f.get("where") or ""
+            page = next((m.get("page") for m in c["members"] if m.get("page")), None)
+            base = result.get("base_url")
+            if page and base and anchor:
+                from urllib.parse import quote
+                real = result.get("pages", {}).get(page, page)
+                anchor = f"[{anchor}]({base.replace('{page}', quote(real))})"
             cells = [shown, mark, anchor, str(exp), str(act)]
             out.append("| " + " | ".join(x.replace("|", " ") for x in cells) + " |")
         out.append("")
@@ -723,6 +852,26 @@ def main():
         help="what the audit actually ran against. Required on purpose: scoring a "
              "prototype as though it were a build measures the artefact, not the design.",
     )
+    ap.add_argument(
+        "--base-url",
+        default=None,
+        help="URL template for the artefact, with {page} where the page name goes. The "
+             "report turns each finding's `page` into a link. Example: "
+             "'https://claude.ai/design/p/<id>?file={page}&via=share'",
+    )
+    ap.add_argument(
+        "--pages",
+        default=None,
+        help="JSON map of the page name a finding uses to the file name the project uses "
+             "today. A renamed design file breaks every link in every round at once; this "
+             "fixes it in one place.",
+    )
+    ap.add_argument(
+        "--tickets",
+        default=None,
+        help="JSON map of ticket number to Notion page id. Ticket references in the prose "
+             "become links, so a reader can open the ticket a finding rests on.",
+    )
     ap.add_argument("--previous", default=None, help="previous round's directory, for deltas")
     ap.add_argument(
         "--previous-stage",
@@ -744,6 +893,9 @@ def main():
     reports = load(args.directory)
     result = tally(reports, impacts, stages, args.stage)
     result["rule_titles"] = titles
+    result["base_url"] = args.base_url
+    result["tickets"] = json.loads(Path(args.tickets).read_text()) if args.tickets else {}
+    result["pages"] = json.loads(Path(args.pages).read_text()) if args.pages else {}
     prev_stage = args.previous_stage or args.stage
     prev = (
         tally(load(args.previous), impacts, stages, prev_stage) if args.previous else None

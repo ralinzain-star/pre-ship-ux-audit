@@ -21,6 +21,24 @@ diagram.
 
 ---
 
+## Coverage
+
+Which source contains each element. Separate from the confidence tier above: tier is how sure
+you are, coverage is who has it. See `references/coverage.md`.
+
+| | In the spec | Not in the spec |
+|---|---|---|
+| **In the build** | `agreed` | `built-unspecified` |
+| **Not in the build** | `specified-unbuilt` | `absent` |
+
+| Element | Kind | Coverage | Evidence |
+|---|---|---|---|
+| | entry / step / state / branch / exit | | Quote the spec line, or say which source lacks it |
+
+Counts, so the reader sees the shape before the detail:
+
+- `agreed` N · `specified-unbuilt` N · `built-unspecified` N · **`absent` N**
+
 ## Entry points
 
 Every way a user can arrive, not only the intended one.

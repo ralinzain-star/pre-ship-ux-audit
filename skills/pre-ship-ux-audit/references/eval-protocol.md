@@ -163,6 +163,7 @@ what 100 means.
       "evidence_class": "design",
       "step_order": 11, "step_name": "Optimize run",
       "where": "The drawer footer, during the run",
+      "page": "Job Dashboard.dc.html",
       "expected": "A failed run says so and offers a retry",
       "actual": "Both runs always reach 100%. No error copy anywhere",
       "fix": "Add a failure state with a cause and a retry that keeps the selection",
@@ -198,6 +199,10 @@ Field notes:
     look at** when the defect is that something is missing. That last form is the one the
     other three cannot do: "the drawer footer, during the run" proves an absence, where a
     quotation can only prove a presence, and most of what this audit finds is absence.
+- `page` is the file or route the defect is on, exactly as the artefact names it, for example
+  `Optimize Resume.dc.html`. The script turns it into a link with `--base-url`, so the report
+  links to the screen instead of describing it. **Name the page, never paste a URL**: a URL
+  in a finding rots the moment the project moves, and the whole report has to be re-edited.
 - `expected` and `actual` are the report's lead table: **what should be true** next to **what
   is**. Both are required on every Critical and Major.
   - `expected` is the specific thing this build should do, 120 chars, written so the reader
@@ -286,6 +291,24 @@ A job with `served: true` needs no `blocked_by`.
 Report closures as carefully as defects. A team that only hears what is still broken
 concludes the round did not count, and the next round gets less honest. The script puts
 them in the report with that instruction attached.
+
+## Linking to the screen
+
+Pass `--base-url` with `{page}` where the page name goes:
+
+```bash
+--base-url 'https://claude.ai/design/p/<id>?file={page}&via=share'
+```
+
+Each finding's `page` then becomes a link on its `where` text. The reader clicks through to
+the screen rather than hunting for it.
+
+**Only as deep as the product allows.** A link reaches a page; it reaches a *state* only if
+the product gives that state an address. Most do not, and when a build has no URL state at
+all, say so in the report: the reason a finding cannot be linked precisely is usually itself
+a finding, and one a spec often promised. Do not fake depth by linking to the page and
+implying it shows the state: the `where` text carries the steps, and that is what gets the
+reader there.
 
 ## Running the score
 

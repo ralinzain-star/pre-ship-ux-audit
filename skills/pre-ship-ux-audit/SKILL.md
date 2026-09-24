@@ -325,6 +325,72 @@ Rules pull against each other. When they do:
 - **First-time vs Returning**: split the screen rather than averaging them. An averaged
   screen under-serves both.
 
+## Coverage: who has this, the spec or the build
+
+Below `build`, the reader is not asking which control is broken, they are asking what still
+has to be designed. That needs two sources compared, not one inspected. So Flow Completion
+classifies every element of the completed flow:
+
+|  | In the spec | Not in the spec |
+|---|---|---|
+| **In the build** | `agreed` | `built-unspecified` |
+| **Not in the build** | `specified-unbuilt` | `absent` |
+
+This is a different axis from the confidence tier: **tier says how sure you are, coverage
+says who has it.** `references/coverage.md` has the rules.
+
+Two cells carry most of the value. **`absent`** is what the audit exists to produce: a
+reviewer reads what is there, and only a completed flow shows what nobody put anywhere.
+**`built-unspecified`** is the decision nobody wrote down, which nobody reviewed and the next
+person cannot tell was deliberate.
+
+It changes the job verdicts too. A job whose path runs through a `specified-unbuilt` step is
+**planned**, not broken; through an `absent` step it is **undesigned**. Calling either
+"broken" sends the team to fix a screen instead of designing a missing one.
+
+## The journey map
+
+`assets/journey-map.md`, written by the JTBD agent after the flow and the jobs are settled.
+It is the artefact that goes on a wall, and it is a reading of the flow and the jobs rather
+than a third opinion: every claim traces back to one of them or to a finding, so the map and
+the scorecard cannot drift apart.
+
+Two rules decide whether a team trusts it. **Evidence, not empathy**: a "what they are
+thinking" row with no task run, ticket, recording or quote behind it gets written as a
+question instead. And **every phase carries a coverage value**, which is the whole reason it
+is built after the flow: a phase that reads `absent` shows as a hole in the wall.
+
+## Make the report clickable
+
+A report that cites twenty-two tickets and links none of them makes the reader search for
+each one, which is most of why these documents feel hard to read. Two lookup files fix it,
+and both live at project level so a rename is fixed once rather than in every finding.
+
+| File | Maps | Used by |
+|---|---|---|
+| `tickets.json` | Ticket number to Notion page | `--tickets`, and `scripts/linkify.py` for translations |
+| `pages.json` | The page name a finding uses, to the file name the project uses today | `--pages` |
+
+```bash
+--base-url 'https://.../p/<id>?file={page}&via=share' --tickets tickets.json --pages pages.json
+```
+
+**Never let an agent paste a URL into a finding.** A design file was renamed mid-audit on this
+project and broke every link at once; `pages.json` is where that gets fixed. Agents name the
+page and cite the ticket number, and the script does the rest.
+
+**A link reaches a page, and a state only when the product gives that state an address.** Most
+do not. Say so in the report rather than implying the link shows the moment: the reason a
+finding cannot be linked precisely is usually itself a finding, and one a spec often promised.
+
+**Ticket numbers and scores are the same shape.** Only cued references are linked: `ticket 6.1`,
+`5.2's`, `3.6:`, `7.3 says`. Turning a match score of 8.1 into a link to ticket 8.1 is worse
+than missing a citation, so the rule errs toward missing.
+
+For a translated report, run `scripts/linkify.py` over it: the script links the English as it
+renders, and a translation written separately would otherwise ship without links, which is how
+a translation quietly becomes the worse copy.
+
 ## A reader who does not work in English
 
 Translate the finished scorecard, do not make the agents write in another language: an

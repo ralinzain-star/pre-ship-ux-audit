@@ -128,6 +128,7 @@ yourself, and do not write prose around the JSON.
       "step_order": <position in the completed flow>,
       "step_name": "<short label for that step>",
       "where": "<how to get to it>",
+      "page": "<the file or route it is on>",
       "expected": "<what should be true>",
       "actual": "<what it does instead>",
 
@@ -170,6 +171,9 @@ not know the feature can follow it top to bottom and watch the build break.
 
 - `step_order` is the position in the completed flow's step table. `step_name` is a short
   human label, "Optimize run", not "S9".
+- `page` is the file or route the defect is on, exactly as the artefact names it. The script
+  turns it into a link, so the reader clicks through instead of hunting. **Name the page,
+  never paste a URL**: a pasted URL rots the moment the project moves.
 - `where` is how to get to it, in one of four forms, best first: a quoted on-screen string, a
   named control, an action to take, or **the empty place to look at** when the defect is that
   something is missing. That last form is the one the others cannot do. "The drawer footer,

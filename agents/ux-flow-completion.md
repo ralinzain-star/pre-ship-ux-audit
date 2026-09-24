@@ -140,6 +140,56 @@ Score against the flow **as it exists**, not as you completed it. Marking a hole
 filling it with an invention does not make it pass: an invented step is an ungrounded
 assumption, so the check it covers is `not_verifiable` at best.
 
+## Coverage: who has this, the spec or the build
+
+Separately from the confidence tier, classify every element of the completed flow by which
+source contains it. **Tier says how sure you are, coverage says who has it.** An element can
+be `observed` in the build and still be `built-unspecified`.
+
+|  | In the spec | Not in the spec |
+|---|---|---|
+| **In the build** | `agreed` | `built-unspecified` |
+| **Not in the build** | `specified-unbuilt` | `absent` |
+
+Read `references/coverage.md` before you classify anything. The short version:
+
+- **Build the spec inventory first, before you open the artefact.** Reading them together
+  makes it far too easy to see the spec in the build.
+- **"The spec implies it" means no.** Quote the line or call it `absent`. A reasonable
+  inference standing in for a written decision is exactly the gap this is meant to expose.
+- **`specified-unbuilt` is usually the backlog, not a finding.** It becomes a finding when
+  something already in the build depends on it.
+- **`absent` is what the audit is for.** A reviewer reads what is there; only a completed
+  flow shows what nobody put anywhere.
+- Where spec and build disagree about **behaviour**, that is a contradiction, not a coverage
+  value. Record the coverage and report the contradiction.
+
+Emit a top-level `coverage` array beside `checks` and `findings`:
+
+```json
+"coverage": [
+  { "element": "Out-of-credits state", "kind": "state", "value": "absent",
+    "note": "Ticket 6.1 prices a run; no screen in any page shows a count or a refusal" },
+  { "element": "Resume review page", "kind": "step", "value": "built-unspecified",
+    "note": "New this round, in no ticket. Nobody reviewed the decision to split it out" }
+]
+```
+
+`kind` is `entry`, `step`, `state`, `branch` or `exit`. `note` is one clause: the evidence for
+the classification, not a summary of the problem.
+
+**Write `element` so a stranger can read it.** It is what the reader sees first and often all
+they read, and a label does not survive that. Name the moment from the user's side, as a
+clause that stands alone: "Reloading the page while an optimization run is going", not
+"Refresh mid-run". A branch is a question, not a pair of nouns: "Whether the user has a resume
+on file, and what the product does when they do not", not "Base Resume present versus absent".
+`references/coverage.md` has the full rule with examples. A few extra words per row is the
+difference between a table a PM reads and one a PM skips.
+
+**If there is no spec, say so and use `built` and `absent` only.** Do not invent a middle. A
+missing spec is worth reporting on its own: it means every decision in the build is
+unreviewed, and nobody can tell design from accident.
+
 ## Output contract
 
 Return exactly one JSON object, nothing else. The orchestrator collects these and runs
@@ -167,6 +217,7 @@ yourself, and do not write prose around the JSON.
       "step_order": <position in the completed flow>,
       "step_name": "<short label for that step>",
       "where": "<how to get to it>",
+      "page": "<the file or route it is on>",
       "expected": "<what should be true>",
       "actual": "<what it does instead>",
 
@@ -209,6 +260,9 @@ not know the feature can follow it top to bottom and watch the build break.
 
 - `step_order` is the position in the completed flow's step table. `step_name` is a short
   human label, "Optimize run", not "S9".
+- `page` is the file or route the defect is on, exactly as the artefact names it. The script
+  turns it into a link, so the reader clicks through instead of hunting. **Name the page,
+  never paste a URL**: a pasted URL rots the moment the project moves.
 - `where` is how to get to it, in one of four forms, best first: a quoted on-screen string, a
   named control, an action to take, or **the empty place to look at** when the defect is that
   something is missing. That last form is the one the others cannot do. "The drawer footer,

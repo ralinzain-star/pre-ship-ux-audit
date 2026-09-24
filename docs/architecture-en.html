@@ -66,18 +66,19 @@
   </div>
 
   <div class="figbox">
-      <svg viewBox="0 0 900 1520" role="img" aria-label="Architecture of the pre-ship UX audit. Whatever exists, a spec, Figma, the critical user flow, the JTBD and a URL, goes in. The first step is naming the stage: spec, static, prototype or build, defined as the earliest point at which absence is trustworthy. Then a stocktake asks whether the critical user flow is complete, whether the JTBD are written and whether they carry measurable outcomes, and decides how deep to go: incomplete means completing the flow and deriving the JTBD with anything AI filled in marked, already there means validating and filling gaps only, and a later round reuses the frozen JTBD. A dispatch line fans out to seven auditors running at once, each listing its rules with the stage from which each rule can be trusted. They converge into a merge step that groups findings naming the same root cause, then into score_audit.py, which splits its output four ways: scored findings counted as distinct root causes, checks the artefact is too early to judge, findings that rest on how the artefact was staged, and observations handed to another owner. Only the first group scores. A dashed loop returns to the dispatch point.">
+      <svg viewBox="0 0 900 1630" role="img" aria-label="Architecture of the pre-ship UX audit. Whatever exists goes in: a spec, Figma, the critical user flow, the JTBD, a URL, and the tickets. The first step is naming the stage: spec, static, prototype or build, defined as the earliest point at which absence is trustworthy. A stocktake then asks whether the critical user flow is complete, whether the JTBD are written and whether they carry measurable outcomes. Next, every element of the flow is classified for coverage by comparing the spec against the build: agreed, specified but not built, built but never specified, or absent from both. A dispatch line fans out to seven auditors running at once, each listing its rules with the stage from which each rule can be trusted. They converge into a merge step that groups findings naming the same root cause, then into score_audit.py, which splits its output four ways: two report files counted as distinct root causes, checks the artefact is too early to judge, findings that rest on how the artefact was staged, and observations handed to another owner. Only the first group scores. A dashed loop returns to the dispatch point.">
         <defs>
           <marker id="k1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"></path></marker>
           <marker id="k2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"></path></marker>
         </defs>
 
         <!-- input -->
-        <rect x="14" y="30" width="140" height="72" rx="6" fill="var(--sunk)" stroke="var(--line-2)"></rect>
+        <rect x="14" y="30" width="140" height="88" rx="6" fill="var(--sunk)" stroke="var(--line-2)"></rect>
         <text x="84" y="54" text-anchor="middle" font-size="10" fill="currentColor">spec · Figma</text>
         <text x="84" y="70" text-anchor="middle" font-size="10" fill="currentColor">critical user flow</text>
         <text x="84" y="86" text-anchor="middle" font-size="10" fill="currentColor">JTBD · a URL</text>
-        <line x1="156" y1="66" x2="174" y2="66" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+        <text x="84" y="102" text-anchor="middle" font-size="10" font-weight="600" fill="var(--accent)">the spec</text>
+        <line x1="156" y1="74" x2="174" y2="74" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
 
         <!-- STAGE: the new first step -->
         <rect x="178" y="18" width="522" height="96" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
@@ -112,218 +113,245 @@
         <text x="196" y="228" font-size="10" fill="var(--accent)">Round 2</text>
         <text x="290" y="228" font-size="10" fill="var(--accent)">Reuse the frozen JTBD, no re-deriving</text>
 
+
+        <line x1="439" y1="242" x2="439" y2="258" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+
+        <!-- COVERAGE: the spec against the build -->
+        <rect x="178" y="262" width="522" height="86" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
+        <text x="196" y="282" font-size="12.5" font-weight="600" fill="var(--accent)">Classify coverage</text>
+        <text x="330" y="282" font-size="9.5" fill="var(--ink-3, currentColor)">spec inventory first, artefact second, never both at once</text>
+        <line x1="196" y1="291" x2="682" y2="291" stroke="var(--line)"></line>
+        <rect x="196" y="299" width="118" height="18" rx="3" fill="var(--sunk)" stroke="var(--line-2)"></rect>
+        <text x="255" y="312" text-anchor="middle" class="m" font-size="8.4" fill="currentColor">agreed</text>
+        <rect x="320" y="299" width="118" height="18" rx="3" fill="var(--sunk)" stroke="var(--line-2)"></rect>
+        <text x="379" y="312" text-anchor="middle" class="m" font-size="8.4" fill="currentColor">specified-unbuilt</text>
+        <rect x="444" y="299" width="118" height="18" rx="3" fill="var(--sunk)" stroke="var(--line-2)"></rect>
+        <text x="503" y="312" text-anchor="middle" class="m" font-size="8.4" fill="currentColor">built-unspecified</text>
+        <rect x="568" y="299" width="118" height="18" rx="3" fill="var(--accent-w)" stroke="var(--accent)"></rect>
+        <text x="627" y="312" text-anchor="middle" class="m" font-size="8.4" font-weight="600" fill="var(--accent)">absent</text>
+        <text x="196" y="333" font-size="9.2" fill="currentColor">Who has this, the spec or the build. A different axis from the confidence tier: tier is how sure you are.</text>
+        <text x="196" y="344" font-size="9.2" fill="currentColor">&quot;Specified, not built&quot; is a backlog item. &quot;Absent&quot; is a blank page. They need different work from different people.</text>
+
         <!-- dispatch -->
-        <path d="M439,242 L439,266 L60,266 L60,284" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-        <circle cx="60" cy="284" r="4" fill="var(--accent)"></circle>
-        <text x="100" y="278" font-size="10" class="m" letter-spacing="1.2" fill="var(--ink-3, currentColor)">IN PARALLEL</text>
-        <text x="192" y="278" font-size="9.2" fill="var(--ink-3, currentColor)">One file per rule: what failing and passing look like, a weight, and the stage from which it can be trusted</text>
-        <text x="688" y="340" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">TRUSTWORTHY FROM</text>
+        <path d="M439,348 L439,372 L60,372 L60,390" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+        <circle cx="60" cy="390" r="4" fill="var(--accent)"></circle>
+        <text x="100" y="384" font-size="10" class="m" letter-spacing="1.2" fill="var(--ink-3, currentColor)">IN PARALLEL</text>
+        <text x="192" y="384" font-size="9.2" fill="var(--ink-3, currentColor)">One file per rule: what failing and passing look like, a weight, and the stage from which it can be trusted</text>
+        <text x="688" y="446" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">TRUSTWORTHY FROM</text>
 
-        <line x1="60" y1="284" x2="60" y2="1188" stroke="currentColor" stroke-width="1.4"></line>
+        <line x1="60" y1="390" x2="60" y2="1294" stroke="currentColor" stroke-width="1.4"></line>
 
-        <line x1="60" y1="398" x2="96" y2="398" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="352" width="600" height="92" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="369" font-size="11.5" font-weight="600" fill="var(--accent)">Flow Integrity</text>
-        <text x="688" y="369" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">4 rules</text>
-        <line x1="112" y1="375" x2="688" y2="375" stroke="var(--line)"/>
-        <text x="112" y="389" class="m" font-size="8.6" fill="currentColor">flow-visible-entry-point</text>
-        <text x="306" y="389" font-size="9.2" fill="var(--ink-3, currentColor)">Entry is findable; a first-timer knows where to start</text>
-        <text x="688" y="389" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="404" class="m" font-size="8.6" fill="currentColor">flow-prerequisites-met</text>
-        <text x="306" y="404" font-size="9.2" fill="var(--ink-3, currentColor)">Whatever a step needs was collected earlier</text>
-        <text x="688" y="404" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">spec</text>
-        <text x="112" y="419" class="m" font-size="8.6" fill="currentColor">flow-all-states-designed</text>
-        <text x="306" y="419" font-size="9.2" fill="var(--ink-3, currentColor)">Success, failure, loading, empty: all four drawn</text>
-        <text x="688" y="419" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="434" class="m" font-size="8.6" fill="currentColor">flow-system-status-visible</text>
-        <text x="306" y="434" font-size="9.2" fill="var(--ink-3, currentColor)">A click gets a response; a long wait says what is happening</text>
-        <text x="688" y="434" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <line x1="60" y1="502" x2="96" y2="502" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="456" width="600" height="92" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="473" font-size="11.5" font-weight="600" fill="var(--accent)">Control &amp; Transparency</text>
-        <text x="688" y="473" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">4 rules</text>
-        <line x1="112" y1="479" x2="688" y2="479" stroke="var(--line)"/>
-        <text x="112" y="493" class="m" font-size="8.6" fill="currentColor">control-pause-stop-undo</text>
-        <text x="306" y="493" font-size="9.2" fill="var(--ink-3, currentColor)">Every screen has an exit; work in progress can be stopped</text>
-        <text x="688" y="493" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="508" class="m" font-size="8.6" fill="currentColor">control-confirm-irreversible</text>
-        <text x="306" y="508" font-size="9.2" fill="var(--ink-3, currentColor)">Anything unrecoverable confirms first, or offers undo</text>
-        <text x="688" y="508" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="523" class="m" font-size="8.6" fill="currentColor">control-explain-behaviour</text>
-        <text x="306" y="523" font-size="9.2" fill="var(--ink-3, currentColor)">The system explains its own changes and what unlocks a disabled control</text>
-        <text x="688" y="523" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="538" class="m" font-size="8.6" fill="currentColor">control-action-history</text>
-        <text x="306" y="538" font-size="9.2" fill="var(--ink-3, currentColor)">What was done is still findable, not just a toast that vanished</text>
-        <text x="688" y="538" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <line x1="60" y1="606" x2="96" y2="606" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="560" width="600" height="92" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="577" font-size="11.5" font-weight="600" fill="var(--accent)">Trust &amp; Copy</text>
-        <text x="688" y="577" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">4 rules</text>
-        <line x1="112" y1="583" x2="688" y2="583" stroke="var(--line)"/>
-        <text x="112" y="597" class="m" font-size="8.6" fill="currentColor">trust-actionable-errors</text>
-        <text x="306" y="597" font-size="9.2" fill="var(--ink-3, currentColor)">Errors say what went wrong and what to do now</text>
-        <text x="688" y="597" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="612" class="m" font-size="8.6" fill="currentColor">trust-plain-language</text>
-        <text x="306" y="612" font-size="9.2" fill="var(--ink-3, currentColor)">The user's words, not internal jargon</text>
-        <text x="688" y="612" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="627" class="m" font-size="8.6" fill="currentColor">trust-explain-recommendations</text>
-        <text x="306" y="627" font-size="9.2" fill="var(--ink-3, currentColor)">Recommendations and scores come with a reason</text>
-        <text x="688" y="627" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="642" class="m" font-size="8.6" fill="currentColor">trust-specific-ctas</text>
-        <text x="306" y="642" font-size="9.2" fill="var(--ink-3, currentColor)">Buttons say what happens, not &quot;Submit&quot;</text>
-        <text x="688" y="642" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <line x1="60" y1="718" x2="96" y2="718" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="664" width="600" height="107" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="681" font-size="11.5" font-weight="600" fill="var(--accent)">Edge Cases</text>
-        <text x="688" y="681" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">5 rules</text>
-        <line x1="112" y1="687" x2="688" y2="687" stroke="var(--line)"/>
-        <text x="112" y="701" class="m" font-size="8.6" fill="currentColor">edge-missing-data</text>
-        <text x="306" y="701" font-size="9.2" fill="var(--ink-3, currentColor)">Missing data is stated, not left blank or faked into a score</text>
-        <text x="688" y="701" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="716" class="m" font-size="8.6" fill="currentColor">edge-network-failure</text>
-        <text x="306" y="716" font-size="9.2" fill="var(--ink-3, currentColor)">Offline, timeout and server error each have a screen</text>
-        <text x="688" y="716" text-anchor="end" class="m" font-size="8.2" fill="var(--major)">build</text>
-        <text x="112" y="731" class="m" font-size="8.6" fill="currentColor">edge-duplicate-actions</text>
-        <text x="306" y="731" font-size="9.2" fill="var(--ink-3, currentColor)">A double click does not send two</text>
-        <text x="688" y="731" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="746" class="m" font-size="8.6" fill="currentColor">edge-interruption-recovery</text>
-        <text x="306" y="746" font-size="9.2" fill="var(--ink-3, currentColor)">Close it and come back: what was typed is still there</text>
-        <text x="688" y="746" text-anchor="end" class="m" font-size="8.2" fill="var(--major)">build</text>
-        <text x="112" y="761" class="m" font-size="8.6" fill="currentColor">edge-first-vs-returning</text>
-        <text x="306" y="761" font-size="9.2" fill="var(--ink-3, currentColor)">A first visit and a hundredth look different</text>
-        <text x="688" y="761" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <line x1="60" y1="866" x2="96" y2="866" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="783" width="600" height="167" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="800" font-size="11.5" font-weight="600" fill="var(--accent)">Usability Heuristics</text>
-        <text x="688" y="800" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">9 checks</text>
-        <line x1="112" y1="806" x2="688" y2="806" stroke="var(--line)"/>
-        <text x="112" y="820" class="m" font-size="8.6" fill="currentColor">ux-no-dark-patterns</text>
-        <text x="306" y="820" font-size="9.2" fill="var(--ink-3, currentColor)">Cancelling is as easy as subscribing; no guilt copy or hidden fees</text>
-        <text x="688" y="820" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="835" class="m" font-size="8.6" fill="currentColor">ux-consistency-standards</text>
-        <text x="306" y="835" font-size="9.2" fill="var(--ink-3, currentColor)">Components behave and are named consistently</text>
-        <text x="688" y="835" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="850" class="m" font-size="8.6" fill="currentColor">ux-error-prevention</text>
-        <text x="306" y="850" font-size="9.2" fill="var(--ink-3, currentColor)">Pickers and defaults prevent errors, rather than scolding afterwards</text>
-        <text x="688" y="850" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="865" class="m" font-size="8.6" fill="currentColor">ux-recognition-over-recall</text>
-        <text x="306" y="865" font-size="9.2" fill="var(--ink-3, currentColor)">Nothing to memorise from the previous screen</text>
-        <text x="688" y="865" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="880" class="m" font-size="8.6" fill="currentColor">ux-minimalist-hierarchy</text>
-        <text x="306" y="880" font-size="9.2" fill="var(--ink-3, currentColor)">One primary action per screen</text>
-        <text x="688" y="880" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="895" class="m" font-size="8.6" fill="currentColor">ux-orientation-trunk-test</text>
-        <text x="306" y="895" font-size="9.2" fill="var(--ink-3, currentColor)">Land on any page and you know where you are</text>
-        <text x="688" y="895" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="910" class="m" font-size="8.6" fill="currentColor">ux-scannable-not-thinkable</text>
-        <text x="306" y="910" font-size="9.2" fill="var(--ink-3, currentColor)">Scannable; nothing makes you stop and think</text>
-        <text x="688" y="910" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="925" class="m" font-size="8.6" fill="currentColor">ux-flexibility-efficiency</text>
-        <text x="306" y="925" font-size="9.2" fill="var(--ink-3, currentColor)">Shortcuts and bulk actions for repeat users</text>
-        <text x="688" y="925" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="940" class="m" font-size="8.6" fill="currentColor">ux-contextual-help</text>
-        <text x="306" y="940" font-size="9.2" fill="var(--ink-3, currentColor)">Help sits where it is needed, not on another site</text>
-        <text x="688" y="940" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <line x1="60" y1="1046" x2="96" y2="1046" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="962" width="600" height="167" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="979" font-size="11.5" font-weight="600" fill="var(--accent)">Accessibility</text>
-        <text x="688" y="979" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">9 checks</text>
-        <line x1="112" y1="985" x2="688" y2="985" stroke="var(--line)"/>
-        <text x="112" y="999" class="m" font-size="8.6" fill="currentColor">a11y-keyboard-operable</text>
-        <text x="306" y="999" font-size="9.2" fill="var(--ink-3, currentColor)">The whole flow works on a keyboard alone</text>
-        <text x="688" y="999" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="1014" class="m" font-size="8.6" fill="currentColor">a11y-names-and-labels</text>
-        <text x="306" y="1014" font-size="9.2" fill="var(--ink-3, currentColor)">Every control has a name, icon-only buttons included</text>
-        <text x="688" y="1014" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="1029" class="m" font-size="8.6" fill="currentColor">a11y-form-errors</text>
-        <text x="306" y="1029" font-size="9.2" fill="var(--ink-3, currentColor)">Errors point at the right field and input is preserved</text>
-        <text x="688" y="1029" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="1044" class="m" font-size="8.6" fill="currentColor">a11y-focus-visible</text>
-        <text x="306" y="1044" font-size="9.2" fill="var(--ink-3, currentColor)">You can see where focus is</text>
-        <text x="688" y="1044" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="1059" class="m" font-size="8.6" fill="currentColor">a11y-contrast-aa</text>
-        <text x="306" y="1059" font-size="9.2" fill="var(--ink-3, currentColor)">Contrast measured not eyeballed: text 4.5:1, components 3:1</text>
-        <text x="688" y="1059" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="1074" class="m" font-size="8.6" fill="currentColor">a11y-status-announced</text>
-        <text x="306" y="1074" font-size="9.2" fill="var(--ink-3, currentColor)">Async results are announced, not only shown</text>
-        <text x="688" y="1074" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <text x="112" y="1089" class="m" font-size="8.6" fill="currentColor">a11y-not-colour-alone</text>
-        <text x="306" y="1089" font-size="9.2" fill="var(--ink-3, currentColor)">Nothing is distinguished by colour alone</text>
-        <text x="688" y="1089" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="1104" class="m" font-size="8.6" fill="currentColor">a11y-target-size</text>
-        <text x="306" y="1104" font-size="9.2" fill="var(--ink-3, currentColor)">Targets at least 24px</text>
-        <text x="688" y="1104" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
-        <text x="112" y="1119" class="m" font-size="8.6" fill="currentColor">a11y-motion-and-timing</text>
-        <text x="306" y="1119" font-size="9.2" fill="var(--ink-3, currentColor)">Motion can be turned off, timeouts extended</text>
-        <text x="688" y="1119" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
-        <line x1="60" y1="1164" x2="96" y2="1164" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
-        <rect x="100" y="1141" width="600" height="47" rx="5" fill="var(--surface)" stroke="var(--line)"/>
-        <text x="112" y="1158" font-size="11.5" font-weight="600" fill="var(--accent)">Usability Test</text>
-        <text x="688" y="1158" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">one task per JTBD</text>
-        <line x1="112" y1="1164" x2="688" y2="1164" stroke="var(--line)"/>
-        <text x="112" y="1178" class="m" font-size="8.6" fill="currentColor">task-&lt;jtbd-slug&gt;</text>
-        <text x="306" y="1178" font-size="9.2" fill="var(--ink-3, currentColor)">Walk each user goal end to end and see whether it completes</text>
-        <text x="688" y="1178" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <line x1="60" y1="504" x2="96" y2="504" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="458" width="600" height="92" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="475" font-size="11.5" font-weight="600" fill="var(--accent)">Flow Integrity</text>
+        <text x="688" y="475" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">4 rules</text>
+        <line x1="112" y1="481" x2="688" y2="481" stroke="var(--line)"/>
+        <text x="112" y="495" class="m" font-size="8.6" fill="currentColor">flow-visible-entry-point</text>
+        <text x="306" y="495" font-size="9.2" fill="var(--ink-3, currentColor)">Entry is findable; a first-timer knows where to start</text>
+        <text x="688" y="495" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="510" class="m" font-size="8.6" fill="currentColor">flow-prerequisites-met</text>
+        <text x="306" y="510" font-size="9.2" fill="var(--ink-3, currentColor)">Whatever a step needs was collected earlier</text>
+        <text x="688" y="510" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">spec</text>
+        <text x="112" y="525" class="m" font-size="8.6" fill="currentColor">flow-all-states-designed</text>
+        <text x="306" y="525" font-size="9.2" fill="var(--ink-3, currentColor)">Success, failure, loading, empty: all four drawn</text>
+        <text x="688" y="525" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="540" class="m" font-size="8.6" fill="currentColor">flow-system-status-visible</text>
+        <text x="306" y="540" font-size="9.2" fill="var(--ink-3, currentColor)">A click gets a response; a long wait says what is happening</text>
+        <text x="688" y="540" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <line x1="60" y1="608" x2="96" y2="608" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="562" width="600" height="92" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="579" font-size="11.5" font-weight="600" fill="var(--accent)">Control &amp; Transparency</text>
+        <text x="688" y="579" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">4 rules</text>
+        <line x1="112" y1="585" x2="688" y2="585" stroke="var(--line)"/>
+        <text x="112" y="599" class="m" font-size="8.6" fill="currentColor">control-pause-stop-undo</text>
+        <text x="306" y="599" font-size="9.2" fill="var(--ink-3, currentColor)">Every screen has an exit; work in progress can be stopped</text>
+        <text x="688" y="599" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="614" class="m" font-size="8.6" fill="currentColor">control-confirm-irreversible</text>
+        <text x="306" y="614" font-size="9.2" fill="var(--ink-3, currentColor)">Anything unrecoverable confirms first, or offers undo</text>
+        <text x="688" y="614" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="629" class="m" font-size="8.6" fill="currentColor">control-explain-behaviour</text>
+        <text x="306" y="629" font-size="9.2" fill="var(--ink-3, currentColor)">The system explains its own changes and what unlocks a disabled control</text>
+        <text x="688" y="629" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="644" class="m" font-size="8.6" fill="currentColor">control-action-history</text>
+        <text x="306" y="644" font-size="9.2" fill="var(--ink-3, currentColor)">What was done is still findable, not just a toast that vanished</text>
+        <text x="688" y="644" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <line x1="60" y1="712" x2="96" y2="712" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="666" width="600" height="92" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="683" font-size="11.5" font-weight="600" fill="var(--accent)">Trust &amp; Copy</text>
+        <text x="688" y="683" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">4 rules</text>
+        <line x1="112" y1="689" x2="688" y2="689" stroke="var(--line)"/>
+        <text x="112" y="703" class="m" font-size="8.6" fill="currentColor">trust-actionable-errors</text>
+        <text x="306" y="703" font-size="9.2" fill="var(--ink-3, currentColor)">Errors say what went wrong and what to do now</text>
+        <text x="688" y="703" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="718" class="m" font-size="8.6" fill="currentColor">trust-plain-language</text>
+        <text x="306" y="718" font-size="9.2" fill="var(--ink-3, currentColor)">The user's words, not internal jargon</text>
+        <text x="688" y="718" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="733" class="m" font-size="8.6" fill="currentColor">trust-explain-recommendations</text>
+        <text x="306" y="733" font-size="9.2" fill="var(--ink-3, currentColor)">Recommendations and scores come with a reason</text>
+        <text x="688" y="733" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="748" class="m" font-size="8.6" fill="currentColor">trust-specific-ctas</text>
+        <text x="306" y="748" font-size="9.2" fill="var(--ink-3, currentColor)">Buttons say what happens, not &quot;Submit&quot;</text>
+        <text x="688" y="748" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <line x1="60" y1="824" x2="96" y2="824" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="770" width="600" height="107" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="787" font-size="11.5" font-weight="600" fill="var(--accent)">Edge Cases</text>
+        <text x="688" y="787" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">5 rules</text>
+        <line x1="112" y1="793" x2="688" y2="793" stroke="var(--line)"/>
+        <text x="112" y="807" class="m" font-size="8.6" fill="currentColor">edge-missing-data</text>
+        <text x="306" y="807" font-size="9.2" fill="var(--ink-3, currentColor)">Missing data is stated, not left blank or faked into a score</text>
+        <text x="688" y="807" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="822" class="m" font-size="8.6" fill="currentColor">edge-network-failure</text>
+        <text x="306" y="822" font-size="9.2" fill="var(--ink-3, currentColor)">Offline, timeout and server error each have a screen</text>
+        <text x="688" y="822" text-anchor="end" class="m" font-size="8.2" fill="var(--major)">build</text>
+        <text x="112" y="837" class="m" font-size="8.6" fill="currentColor">edge-duplicate-actions</text>
+        <text x="306" y="837" font-size="9.2" fill="var(--ink-3, currentColor)">A double click does not send two</text>
+        <text x="688" y="837" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="852" class="m" font-size="8.6" fill="currentColor">edge-interruption-recovery</text>
+        <text x="306" y="852" font-size="9.2" fill="var(--ink-3, currentColor)">Close it and come back: what was typed is still there</text>
+        <text x="688" y="852" text-anchor="end" class="m" font-size="8.2" fill="var(--major)">build</text>
+        <text x="112" y="867" class="m" font-size="8.6" fill="currentColor">edge-first-vs-returning</text>
+        <text x="306" y="867" font-size="9.2" fill="var(--ink-3, currentColor)">A first visit and a hundredth look different</text>
+        <text x="688" y="867" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <line x1="60" y1="972" x2="96" y2="972" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="889" width="600" height="167" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="906" font-size="11.5" font-weight="600" fill="var(--accent)">Usability Heuristics</text>
+        <text x="688" y="906" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">9 checks</text>
+        <line x1="112" y1="912" x2="688" y2="912" stroke="var(--line)"/>
+        <text x="112" y="926" class="m" font-size="8.6" fill="currentColor">ux-no-dark-patterns</text>
+        <text x="306" y="926" font-size="9.2" fill="var(--ink-3, currentColor)">Cancelling is as easy as subscribing; no guilt copy or hidden fees</text>
+        <text x="688" y="926" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="941" class="m" font-size="8.6" fill="currentColor">ux-consistency-standards</text>
+        <text x="306" y="941" font-size="9.2" fill="var(--ink-3, currentColor)">Components behave and are named consistently</text>
+        <text x="688" y="941" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="956" class="m" font-size="8.6" fill="currentColor">ux-error-prevention</text>
+        <text x="306" y="956" font-size="9.2" fill="var(--ink-3, currentColor)">Pickers and defaults prevent errors, rather than scolding afterwards</text>
+        <text x="688" y="956" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="971" class="m" font-size="8.6" fill="currentColor">ux-recognition-over-recall</text>
+        <text x="306" y="971" font-size="9.2" fill="var(--ink-3, currentColor)">Nothing to memorise from the previous screen</text>
+        <text x="688" y="971" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="986" class="m" font-size="8.6" fill="currentColor">ux-minimalist-hierarchy</text>
+        <text x="306" y="986" font-size="9.2" fill="var(--ink-3, currentColor)">One primary action per screen</text>
+        <text x="688" y="986" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="1001" class="m" font-size="8.6" fill="currentColor">ux-orientation-trunk-test</text>
+        <text x="306" y="1001" font-size="9.2" fill="var(--ink-3, currentColor)">Land on any page and you know where you are</text>
+        <text x="688" y="1001" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="1016" class="m" font-size="8.6" fill="currentColor">ux-scannable-not-thinkable</text>
+        <text x="306" y="1016" font-size="9.2" fill="var(--ink-3, currentColor)">Scannable; nothing makes you stop and think</text>
+        <text x="688" y="1016" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="1031" class="m" font-size="8.6" fill="currentColor">ux-flexibility-efficiency</text>
+        <text x="306" y="1031" font-size="9.2" fill="var(--ink-3, currentColor)">Shortcuts and bulk actions for repeat users</text>
+        <text x="688" y="1031" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="1046" class="m" font-size="8.6" fill="currentColor">ux-contextual-help</text>
+        <text x="306" y="1046" font-size="9.2" fill="var(--ink-3, currentColor)">Help sits where it is needed, not on another site</text>
+        <text x="688" y="1046" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <line x1="60" y1="1152" x2="96" y2="1152" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="1068" width="600" height="167" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="1085" font-size="11.5" font-weight="600" fill="var(--accent)">Accessibility</text>
+        <text x="688" y="1085" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">9 checks</text>
+        <line x1="112" y1="1091" x2="688" y2="1091" stroke="var(--line)"/>
+        <text x="112" y="1105" class="m" font-size="8.6" fill="currentColor">a11y-keyboard-operable</text>
+        <text x="306" y="1105" font-size="9.2" fill="var(--ink-3, currentColor)">The whole flow works on a keyboard alone</text>
+        <text x="688" y="1105" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="1120" class="m" font-size="8.6" fill="currentColor">a11y-names-and-labels</text>
+        <text x="306" y="1120" font-size="9.2" fill="var(--ink-3, currentColor)">Every control has a name, icon-only buttons included</text>
+        <text x="688" y="1120" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="1135" class="m" font-size="8.6" fill="currentColor">a11y-form-errors</text>
+        <text x="306" y="1135" font-size="9.2" fill="var(--ink-3, currentColor)">Errors point at the right field and input is preserved</text>
+        <text x="688" y="1135" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="1150" class="m" font-size="8.6" fill="currentColor">a11y-focus-visible</text>
+        <text x="306" y="1150" font-size="9.2" fill="var(--ink-3, currentColor)">You can see where focus is</text>
+        <text x="688" y="1150" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="1165" class="m" font-size="8.6" fill="currentColor">a11y-contrast-aa</text>
+        <text x="306" y="1165" font-size="9.2" fill="var(--ink-3, currentColor)">Contrast measured not eyeballed: text 4.5:1, components 3:1</text>
+        <text x="688" y="1165" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="1180" class="m" font-size="8.6" fill="currentColor">a11y-status-announced</text>
+        <text x="306" y="1180" font-size="9.2" fill="var(--ink-3, currentColor)">Async results are announced, not only shown</text>
+        <text x="688" y="1180" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <text x="112" y="1195" class="m" font-size="8.6" fill="currentColor">a11y-not-colour-alone</text>
+        <text x="306" y="1195" font-size="9.2" fill="var(--ink-3, currentColor)">Nothing is distinguished by colour alone</text>
+        <text x="688" y="1195" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="1210" class="m" font-size="8.6" fill="currentColor">a11y-target-size</text>
+        <text x="306" y="1210" font-size="9.2" fill="var(--ink-3, currentColor)">Targets at least 24px</text>
+        <text x="688" y="1210" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">static</text>
+        <text x="112" y="1225" class="m" font-size="8.6" fill="currentColor">a11y-motion-and-timing</text>
+        <text x="306" y="1225" font-size="9.2" fill="var(--ink-3, currentColor)">Motion can be turned off, timeouts extended</text>
+        <text x="688" y="1225" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
+        <line x1="60" y1="1270" x2="96" y2="1270" stroke="currentColor" stroke-width="1.2" marker-end="url(#k1)"/>
+        <rect x="100" y="1247" width="600" height="47" rx="5" fill="var(--surface)" stroke="var(--line)"/>
+        <text x="112" y="1264" font-size="11.5" font-weight="600" fill="var(--accent)">Usability Test</text>
+        <text x="688" y="1264" text-anchor="end" font-size="9" fill="var(--ink-3, currentColor)">one task per JTBD</text>
+        <line x1="112" y1="1270" x2="688" y2="1270" stroke="var(--line)"/>
+        <text x="112" y="1284" class="m" font-size="8.6" fill="currentColor">task-&lt;jtbd-slug&gt;</text>
+        <text x="306" y="1284" font-size="9.2" fill="var(--ink-3, currentColor)">Walk each user goal end to end and see whether it completes</text>
+        <text x="688" y="1284" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">prototype</text>
 
         <!-- converge -->
-        <path d="M60,1188 L60,1206 L439,1206 L439,1222" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></path>
+        <path d="M60,1294 L60,1312 L439,1312 L439,1328" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></path>
 
         <!-- merge step, before scoring -->
-        <rect x="178" y="1226" width="522" height="56" rx="6" fill="var(--surface)" stroke="var(--line-2)" stroke-width="1.2"></rect>
-        <text x="196" y="1245" font-size="11.5" font-weight="600" fill="var(--ink, currentColor)">Merge duplicates</text>
-        <text x="318" y="1245" font-size="9.2" fill="var(--ink-3, currentColor)">seven auditors find one defect from seven angles</text>
-        <text x="196" y="1262" font-size="9.2" fill="currentColor">Same root cause when one fix closes both. Same screen is not, same rule is not. The script flags</text>
-        <text x="196" y="1275" font-size="9.2" fill="currentColor">suspects and merges nothing: folding two real defects together loses one of them for good.</text>
+        <rect x="178" y="1332" width="522" height="56" rx="6" fill="var(--surface)" stroke="var(--line-2)" stroke-width="1.2"></rect>
+        <text x="196" y="1351" font-size="11.5" font-weight="600" fill="var(--ink, currentColor)">Merge duplicates</text>
+        <text x="318" y="1351" font-size="9.2" fill="var(--ink-3, currentColor)">seven auditors find one defect from seven angles</text>
+        <text x="196" y="1368" font-size="9.2" fill="currentColor">Same root cause when one fix closes both. Same screen is not, same rule is not. The script flags</text>
+        <text x="196" y="1381" font-size="9.2" fill="currentColor">suspects and merges nothing: folding two real defects together loses one of them for good.</text>
 
-        <line x1="439" y1="1282" x2="439" y2="1300" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+        <line x1="439" y1="1388" x2="439" y2="1406" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
 
-        <rect x="178" y="1304" width="522" height="46" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
-        <text x="196" y="1324" class="m" font-size="11" font-weight="600" fill="var(--accent)">score_audit.py --stage</text>
-        <text x="196" y="1341" font-size="9.2" fill="currentColor">Verdict from the Critical count, score from the weighted pass rate, and the three exclusions below</text>
+        <rect x="178" y="1410" width="522" height="46" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"></rect>
+        <text x="196" y="1430" class="m" font-size="11" font-weight="600" fill="var(--accent)">score_audit.py --stage</text>
+        <text x="196" y="1447" font-size="9.2" fill="currentColor">Verdict from the Critical count, score from the weighted pass rate, and the three exclusions below</text>
 
-        <path d="M439,1350 L439,1366" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-        <path d="M191,1366 L773,1366" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-        <line x1="191" y1="1366" x2="191" y2="1384" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
-        <line x1="385" y1="1366" x2="385" y2="1384" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
-        <line x1="579" y1="1366" x2="579" y2="1384" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
-        <line x1="773" y1="1366" x2="773" y2="1384" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+        <path d="M439,1456 L439,1472" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+        <path d="M191,1472 L773,1472" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+        <line x1="191" y1="1472" x2="191" y2="1490" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+        <line x1="385" y1="1472" x2="385" y2="1490" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+        <line x1="579" y1="1472" x2="579" y2="1490" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
+        <line x1="773" y1="1472" x2="773" y2="1490" stroke="currentColor" stroke-width="1.4" marker-end="url(#k1)"></line>
 
         <!-- one scored group, three set aside -->
-        <rect x="100" y="1388" width="182" height="92" rx="5" fill="var(--surface)" stroke="var(--line-2)"></rect>
-        <text x="112" y="1405" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Scored findings</text>
-        <text x="270" y="1405" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">SCORES</text>
-        <text x="112" y="1422" font-size="9.2" fill="currentColor">Counted as distinct root causes,</text>
-        <text x="112" y="1435" font-size="9.2" fill="currentColor">not raw findings. The verdict</text>
-        <text x="112" y="1448" font-size="9.2" fill="currentColor">wording follows the stage.</text>
-        <text x="112" y="1466" class="m" font-size="8.6" fill="var(--crit)">10 critical · 30 major · 2 nice</text>
+        <rect x="100" y="1494" width="182" height="92" rx="5" fill="var(--surface)" stroke="var(--line-2)"></rect>
+        <text x="112" y="1511" font-size="10" font-weight="600" fill="var(--ink, currentColor)">report.md + scorecard.md</text>
+        <text x="270" y="1511" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">SCORES</text>
+        <text x="112" y="1528" font-size="9.2" fill="currentColor">Below build, the short one is</text>
+        <text x="112" y="1541" font-size="9.2" fill="currentColor">the report: jobs, the journey,</text>
+        <text x="112" y="1554" font-size="9.2" fill="currentColor">coverage, what is undesigned.</text>
+        <text x="112" y="1572" class="m" font-size="8.6" fill="var(--crit)">11 critical · 35 major · 9 nice</text>
 
-        <rect x="294" y="1388" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
-        <text x="306" y="1405" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Too early to judge</text>
-        <text x="464" y="1405" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">EXCLUDED</text>
-        <text x="306" y="1422" font-size="9.2" fill="currentColor">The artefact is below the rule's</text>
-        <text x="306" y="1435" font-size="9.2" fill="currentColor">stage. Scoring it would measure</text>
-        <text x="306" y="1448" font-size="9.2" fill="currentColor">the artefact, not the design, and</text>
-        <text x="306" y="1461" font-size="9.2" fill="currentColor">break the round-to-round compare.</text>
+        <rect x="294" y="1494" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
+        <text x="306" y="1511" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Too early to judge</text>
+        <text x="464" y="1511" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">EXCLUDED</text>
+        <text x="306" y="1528" font-size="9.2" fill="currentColor">The artefact is below the rule's</text>
+        <text x="306" y="1541" font-size="9.2" fill="currentColor">stage. Scoring it would measure</text>
+        <text x="306" y="1554" font-size="9.2" fill="currentColor">the artefact, not the design, and</text>
+        <text x="306" y="1567" font-size="9.2" fill="currentColor">break the round-to-round compare.</text>
 
-        <rect x="488" y="1388" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
-        <text x="500" y="1405" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Artefact fidelity</text>
-        <text x="658" y="1405" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">EXCLUDED</text>
-        <text x="500" y="1422" font-size="9.2" fill="currentColor">Real, but it rests on staging:</text>
-        <text x="500" y="1435" font-size="9.2" fill="currentColor">seeded data, unwired controls,</text>
-        <text x="500" y="1448" font-size="9.2" fill="currentColor">hardcoded values. Re-test next</text>
-        <text x="500" y="1461" font-size="9.2" fill="currentColor">stage; if it survives, it counts.</text>
+        <rect x="488" y="1494" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
+        <text x="500" y="1511" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Artefact fidelity</text>
+        <text x="658" y="1511" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">EXCLUDED</text>
+        <text x="500" y="1528" font-size="9.2" fill="currentColor">Real, but it rests on staging:</text>
+        <text x="500" y="1541" font-size="9.2" fill="currentColor">seeded data, unwired controls,</text>
+        <text x="500" y="1554" font-size="9.2" fill="currentColor">hardcoded values. Re-test next</text>
+        <text x="500" y="1567" font-size="9.2" fill="currentColor">stage; if it survives, it counts.</text>
 
-        <rect x="682" y="1388" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
-        <text x="694" y="1405" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Another owner</text>
-        <text x="852" y="1405" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">NOT COUNTED</text>
-        <text x="694" y="1422" font-size="9.2" fill="currentColor">Real, but outside this auditor's</text>
-        <text x="694" y="1435" font-size="9.2" fill="currentColor">remit. Handing work to the right</text>
-        <text x="694" y="1448" font-size="9.2" fill="currentColor">person should not cost the team</text>
-        <text x="694" y="1461" font-size="9.2" fill="currentColor">a finding.</text>
+        <rect x="682" y="1494" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
+        <text x="694" y="1511" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Another owner</text>
+        <text x="852" y="1511" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">NOT COUNTED</text>
+        <text x="694" y="1528" font-size="9.2" fill="currentColor">Real, but outside this auditor's</text>
+        <text x="694" y="1541" font-size="9.2" fill="currentColor">remit. Handing work to the right</text>
+        <text x="694" y="1554" font-size="9.2" fill="currentColor">person should not cost the team</text>
+        <text x="694" y="1567" font-size="9.2" fill="currentColor">a finding.</text>
+
+        <rect x="682" y="1494" width="182" height="92" rx="5" fill="var(--sunk)" stroke="var(--line-2)" stroke-dasharray="3 2"></rect>
+        <text x="694" y="1511" font-size="10" font-weight="600" fill="var(--ink, currentColor)">Another owner</text>
+        <text x="852" y="1511" text-anchor="end" class="m" font-size="8.2" fill="var(--ink-3, currentColor)">NOT COUNTED</text>
+        <text x="694" y="1528" font-size="9.2" fill="currentColor">Real, but outside this auditor’s</text>
+        <text x="694" y="1541" font-size="9.2" fill="currentColor">remit. Handing work to the right</text>
+        <text x="694" y="1554" font-size="9.2" fill="currentColor">person should not cost the team</text>
+        <text x="694" y="1567" font-size="9.2" fill="currentColor">a finding.</text>
 
         <!-- loop -->
-        <path d="M439,1480 L439,1500 L22,1500 L22,284 L56,284" fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#k2)"></path>
-        <text x="34" y="880" font-size="9" fill="var(--accent)" transform="rotate(-90 34 880)" text-anchor="middle">Fix, rerun against the same frozen JTBD · it never completes, it produces comparable rounds</text>
+        <path d="M439,1586 L439,1606 L22,1606 L22,390 L56,390" fill="none" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#k2)"></path>
+        <text x="34" y="986" font-size="9" fill="var(--accent)" transform="rotate(-90 34 986)" text-anchor="middle">Fix, rerun against the same frozen JTBD · it never completes, it produces comparable rounds</text>
       </svg>
   </div>
 
